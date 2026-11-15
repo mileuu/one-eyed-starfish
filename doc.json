@@ -17,6 +17,11 @@
  "log": [
   {
    "by": "purple",
+   "at": "2026-11-15T23:35:39.719Z",
+   "what": "done: \"share email address\""
+  },
+  {
+   "by": "purple",
    "at": "2026-11-15T23:35:29.561Z",
    "what": "event \"updates Videocall meeting\" edited"
   },
@@ -62,9 +67,10 @@
      "id": "mwigxcohzyzqf",
      "text": "share email address",
      "who": "red",
-     "done": false,
+     "done": true,
      "by": "purple",
-     "at": "2026-11-15T23:31:05.969Z"
+     "at": "2026-11-15T23:31:05.969Z",
+     "doneAt": "2026-11-15T23:35:40.105Z"
     },
     {
      "id": "mwigxz5s7hihp",
