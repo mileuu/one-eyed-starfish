@@ -83,13 +83,13 @@ section{margin-bottom:54px}
 /* ---------- to-do ---------- */
 .list{margin-top:26px}
 .lhead{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; padding-bottom:8px; border-bottom:1px solid var(--line)}
-.lhead h3{margin:0; font-weight:500; font-size:22px; letter-spacing:-.01em}
+.lhead h3{margin:0; font-weight:500; font-size:19px; letter-spacing:-.01em}
 .lhead .until{font-family:var(--mono); font-size:12px; color:var(--dim)}
 .lhead .until.late{color:var(--accent)}
 .lhead .count{font-family:var(--mono); font-size:12px; color:var(--faint)}
 .task{display:flex; align-items:baseline; gap:14px; padding:11px 0; border-bottom:1px solid var(--line)}
 .task .tag{width:76px; flex:none}
-.task .tt{font-size:18px; line-height:1.4; color:var(--text); overflow-wrap:anywhere}
+.task .tt{font-size:16px; line-height:1.5; color:var(--text); overflow-wrap:anywhere}
 .task.done .tt{text-decoration:line-through; text-decoration-color:var(--faint); color:var(--faint)}
 .task.done .tag{opacity:.45}
 .check{appearance:none; -webkit-appearance:none; flex:none; width:15px; height:15px; margin:0; border:1px solid var(--dim); border-radius:3px; cursor:pointer; position:relative; top:2px; background:none}
@@ -104,10 +104,14 @@ section{margin-bottom:54px}
 .addrow button:hover{color:var(--ink)}
 
 /* ---------- info document ---------- */
-.flow{padding-top:18px; font-size:17px; line-height:1.7; color:var(--text); max-width:72ch}
-.flow p{margin:0 0 .9em; white-space:pre-wrap; overflow-wrap:anywhere}
-.st{font-family:var(--mono); font-size:10.5px; letter-spacing:.02em; color:var(--c); margin-right:8px; white-space:nowrap; vertical-align:1px}
-.st b{font-weight:400; color:var(--dim)}
+.flow{padding-top:18px; font-size:16px; line-height:1.65; color:var(--text); max-width:72ch}
+.flow .chunk{margin-bottom:22px}
+.flow p{margin:0 0 .55em; white-space:pre-wrap; overflow-wrap:anywhere}
+.flow b{font-weight:600; color:var(--ink)}
+.flow u{text-underline-offset:3px; text-decoration-thickness:1px}
+.st{display:block; font-family:var(--mono); font-size:9.5px; letter-spacing:.03em; color:var(--faint); margin-top:2px}
+.st span{color:var(--c)}
+.fx-red{color:#ff5a4d} .fx-orange{color:#ff9a3d} .fx-yellow{color:#ffd84a} .fx-green{color:#3fdc7c} .fx-blue{color:#5b95ff} .fx-purple{color:#a07bff}
 
 /* ---------- top-right page link + locked page ---------- */
 .hero .top{display:flex; justify-content:space-between; gap:12px; align-items:baseline}
@@ -121,8 +125,18 @@ section{margin-bottom:54px}
 .vnote{font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:20px}
 .editor{padding-top:16px}
 .editor .hint{font-family:var(--mono); font-size:12px; color:var(--dim); margin-bottom:14px; line-height:1.6}
-.editor textarea{width:100%; min-height:55vh; background:#0a0a0a; border:1px solid var(--line); border-radius:10px; padding:16px 18px; outline:none; resize:vertical; font-family:var(--serif); font-size:19px; line-height:1.6; color:var(--ink)}
-.editor textarea:focus{border-color:#444}
+.rich{min-height:50vh; background:#0a0a0a; border:1px solid var(--line); border-radius:0 0 10px 10px; padding:16px 18px; outline:none; font-family:var(--serif); font-size:16px; line-height:1.65; color:var(--text); overflow-wrap:anywhere}
+.rich:focus{border-color:#444}
+.rich p{margin:0}
+.rich b,.rich strong{font-weight:600; color:var(--ink)}
+.rich:empty::before{content:"start writing…"; color:var(--faint)}
+.tb{display:flex; gap:4px; align-items:center; flex-wrap:wrap; border:1px solid var(--line); border-bottom:0; border-radius:10px 10px 0 0; padding:6px 8px; background:#070707}
+.tb button{min-width:30px; height:28px; border-radius:6px; font-family:var(--serif); font-size:15px; color:var(--text); padding:0 8px}
+.tb button:hover{background:#1c1c1c}
+.tb .sw{min-width:0; width:18px; height:18px; border-radius:50%; padding:0; margin:0 3px; background:var(--sw); border:1px solid rgba(255,255,255,.15)}
+.tb .sw:hover{transform:scale(1.15); background:var(--sw)}
+.tb .sep{width:1px; height:18px; background:var(--line); margin:0 6px}
+.tb .clear{font-family:var(--mono); font-size:11px; color:var(--dim)}
 .editor .foot{display:flex; gap:16px; justify-content:flex-end; align-items:center; margin-top:12px}
 .btn{font-family:var(--mono); font-size:13px; border:1px solid var(--rule); border-radius:999px; padding:7px 18px; white-space:nowrap}
 .btn:hover{background:var(--ink); color:#000}
@@ -161,10 +175,10 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
   .grid{margin-top:26px}
   .ev{grid-template-columns:86px 1fr auto; gap:10px}
   .ev .d{font-size:13px} .ev .t{font-size:17px}
-  .flow{font-size:16px}
+  .flow,.rich{font-size:15px}
   .task{gap:10px} .task .tag{width:auto}
-  .task .tt{font-size:17px}
-  .lhead h3{font-size:20px}
+  .task .tt{font-size:15px}
+  .lhead h3{font-size:18px}
 }
 </style>
 </head>
@@ -418,7 +432,54 @@ function renderTodos(doc){
     }).join('') || '<div class="empty">no lists yet</div>'}`;
 }
 
-/* One flowing text. Paragraphs saved together in one edit share one small stamp in front. */
+/* ---- rich text: stored as plain text with tiny markers ----
+   **bold**   __underline__   {red:coloured text}                                  */
+const COLORS = { red:'#ff5a4d', orange:'#ff9a3d', yellow:'#ffd84a', green:'#3fdc7c', blue:'#5b95ff', purple:'#a07bff' };
+const COLOR_BY_VALUE = {};
+for (const [n,h] of Object.entries(COLORS)){
+  const [r,g,b] = [1,3,5].map(i => parseInt(h.slice(i,i+2),16));
+  COLOR_BY_VALUE[h] = n; COLOR_BY_VALUE[`rgb(${r}, ${g}, ${b})`] = n;
+}
+function fmtText(s){
+  let h = esc(s).replace(/(https?:\/\/[^\s<*{}]+[^\s<.,;:!?)\]'"*_{}])/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+  for (let i = 0; i < 3; i++) h = h.replace(/\{(red|orange|yellow|green|blue|purple):([^{}]*?)\}/g, '<span class="fx-$1">$2</span>');
+  return h.replace(/\*\*([\s\S]+?)\*\*/g, '<b>$1</b>').replace(/__([\s\S]+?)__/g, '<u>$1</u>');
+}
+/* editor DOM -> marked-up text (lines joined by \n; empty line = new paragraph) */
+function serialize(root){
+  const BLOCK = /^(DIV|P|H\d|LI|UL|OL|BLOCKQUOTE)$/;
+  const inline = node => {
+    if (node.nodeType === 3) return node.nodeValue.replace(/ /g,' ');
+    if (node.nodeType !== 1) return '';
+    if (node.tagName === 'BR') return '\n';
+    let c = [...node.childNodes].map(inline).join('');
+    if (BLOCK.test(node.tagName)) c = '\n' + c.replace(/\n$/,'') + '\n';
+    const st = node.style || {}, wrap = (m, x) => { const t = x.match(/^(\s*)([\s\S]*?)(\s*)$/); return t[2] ? t[1] + m[0] + t[2] + m[1] + t[3] : x };
+    const col = COLOR_BY_VALUE[(node.getAttribute('color') || '').toLowerCase()] || COLOR_BY_VALUE[st.color]
+      || ((node.className || '').match?.(/\bfx-(red|orange|yellow|green|blue|purple)\b/) || [])[1];
+    if (col) c = c.split('\n').map(l => wrap([`{${col}:`, '}'], l)).join('\n');
+    if (/^(U)$/.test(node.tagName) || /underline/.test(st.textDecoration || st.textDecorationLine || '')) c = c.split('\n').map(l => wrap(['__','__'], l)).join('\n');
+    if (/^(B|STRONG)$/.test(node.tagName) || +st.fontWeight >= 600 || st.fontWeight === 'bold') c = c.split('\n').map(l => wrap(['**','**'], l)).join('\n');
+    return c;
+  };
+  const lines = [];
+  let cur = '';
+  for (const n of root.childNodes){
+    if (n.nodeType === 1 && BLOCK.test(n.tagName)){
+      if (cur){ lines.push(cur); cur = '' }
+      let t = inline(n).replace(/^\n/, '').replace(/\n$/, '');
+      lines.push(...t.split('\n'));
+    } else cur += inline(n);
+  }
+  if (cur) lines.push(...cur.split('\n'));
+  return lines.join('\n').replace(/\*\*\*\*|____/g, '').replace(/[ \t]+$/gm, '');
+}
+const textToEditorHTML = text => text ? text.split('\n').map(l => `<p>${l ? fmtText(l) : '<br>'}</p>`).join('') : '';
+const canon = t => splitParas(t).join('\n\n');
+const edValue = () => $('ed') ? serialize($('ed')) : '';
+const edDirty = () => S.editing && $('ed') && canon(edValue()) !== canon(edText());
+
+/* One flowing text. Everything saved in one edit gets one small stamp underneath. */
 function renderFlow(blocks){
   if (!blocks.length) return '<div class="empty">nothing written yet</div>';
   const chunks = [];
@@ -426,20 +487,45 @@ function renderFlow(blocks){
     const last = chunks[chunks.length-1];
     if (last && last.by === b.by && last.at === b.at) last.blocks.push(b); else chunks.push({ by:b.by, at:b.at, blocks:[b] });
   }
-  return `<div class="flow">${chunks.map(c => c.blocks.map((b,i) =>
-    `<p>${i===0 ? `<span class="st ${c.by}" title="${fmtDate(c.at)} ${fmtTime(c.at)}"><b>${fmtDate(c.at)}</b> ${(MEMBERS[c.by]?.name||'?').toLowerCase()}</span>` : ''}${linkify(b.text)}</p>`).join('')).join('')}</div>`;
+  return `<div class="flow">${chunks.map(c => `<div class="chunk">${c.blocks.map(b => `<p>${fmtText(b.text)}</p>`).join('')}
+    <span class="st ${c.by}" title="${fmtDate(c.at)} ${fmtTime(c.at)}">${fmtDate(c.at)} · <span>${(MEMBERS[c.by]?.name||'?').toLowerCase()}</span></span></div>`).join('')}</div>`;
 }
 function mountEditor(container, title){
   if ($('ed')) return;
   container.innerHTML = `<div class="shead"><h2>${title}</h2></div>
     <div class="editor">
-      <div class="hint">writing as ${tag(S.session.member)} — leave an empty line between paragraphs. what you add or change gets today's date and your name.</div>
-      <textarea id="ed" spellcheck="true" placeholder="start writing…"></textarea>
+      <div class="hint">writing as ${tag(S.session.member)} — leave an empty line between paragraphs · ⌘B bold · ⌘U underline · ⌘↵ save</div>
+      <div class="tb">
+        <button data-cmd="bold" title="bold (⌘B)"><b>B</b></button>
+        <button data-cmd="underline" title="underline (⌘U)"><u>U</u></button>
+        <span class="sep"></span>
+        ${Object.entries(COLORS).map(([n,h]) => `<button class="sw" data-color="${h}" style="--sw:${h}" title="${n}"></button>`).join('')}
+        <span class="sep"></span>
+        <button class="clear" data-cmd="removeFormat" title="remove formatting">clear</button>
+      </div>
+      <div id="ed" class="rich" contenteditable="true" spellcheck="true"></div>
       <div class="foot"><button class="link" id="cancelbtn">cancel</button><button class="btn" id="savebtn">save</button></div></div>`;
-  const ta = $('ed');
-  ta.value = edText();
-  ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
-  ta.addEventListener('keydown', e => { if (e.key==='Enter' && (e.metaKey||e.ctrlKey)) saveEdit(); if (e.key==='Escape') cancelEdit() });
+  const ed = $('ed');
+  try{ document.execCommand('defaultParagraphSeparator', false, 'p'); document.execCommand('styleWithCSS', false, false) }catch{}
+  ed.innerHTML = textToEditorHTML(edText());
+  ed.focus();
+  const r = document.createRange(); r.selectNodeContents(ed); r.collapse(false); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  container.querySelectorAll('.tb button').forEach(b => {
+    b.addEventListener('mousedown', e => e.preventDefault());   // keep the text selection
+    b.addEventListener('click', () => {
+      ed.focus();
+      if (b.dataset.color) document.execCommand('foreColor', false, b.dataset.color);
+      else document.execCommand(b.dataset.cmd, false, null);
+    });
+  });
+  ed.addEventListener('paste', e => { e.preventDefault(); document.execCommand('insertText', false, e.clipboardData.getData('text/plain')) });
+  ed.addEventListener('keydown', e => {
+    const mod = e.metaKey || e.ctrlKey;
+    if (mod && e.key === 'Enter'){ e.preventDefault(); saveEdit() }
+    else if (mod && /^[bB]$/.test(e.key)){ e.preventDefault(); document.execCommand('bold') }
+    else if (mod && /^[uU]$/.test(e.key)){ e.preventDefault(); document.execCommand('underline') }
+    else if (e.key === 'Escape') cancelEdit();
+  });
   $('cancelbtn').onclick = cancelEdit; $('savebtn').onclick = saveEdit;
 }
 function renderInfo(doc){
@@ -496,12 +582,12 @@ async function startEdit(target){
 }
 function edText(){ return S.editing.baseBlocks.map(b=>b.text).join('\n\n') }
 function cancelEdit(){
-  if ($('ed') && $('ed').value !== edText() && !confirm('Throw away your changes?')) return;
+  if (edDirty() && !confirm('Throw away your changes?')) return;
   S.editing = null; renderAll(); refresh(true);
 }
 async function saveEdit(){
   const target = S.editing.target;
-  const d = diff(S.editing.baseBlocks, $('ed').value);
+  const d = diff(S.editing.baseBlocks, edValue());
   if (!d.added && !d.deleted.length){ S.editing = null; renderAll(); return toast('nothing changed') }
   const me = S.session.member, at = new Date().toISOString();
   $('savebtn').disabled = true;
@@ -741,13 +827,13 @@ setInterval(() => { refresh(); refreshVault() }, 20000);
 let goingBack = false;
 addEventListener('hashchange', () => {
   if (goingBack){ goingBack = false; return }
-  if (S.editing && $('ed') && $('ed').value !== edText() && !confirm('Leave without saving?')){ goingBack = true; history.back(); return }
+  if (edDirty() && !confirm('Leave without saving?')){ goingBack = true; history.back(); return }
   S.editing = null; $('info').innerHTML = ''; $('vaultpage').innerHTML = '';
   if (location.hash !== '#important') S.vault = null;      // the important page locks when you leave it
   scrollTo(0,0); renderAll();
 });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh() });
-window.addEventListener('beforeunload', e => { if (S.editing && $('ed') && $('ed').value !== edText()){ e.preventDefault(); e.returnValue = '' } });
+window.addEventListener('beforeunload', e => { if (edDirty()){ e.preventDefault(); e.returnValue = '' } });
 </script>
 </body>
 </html>
