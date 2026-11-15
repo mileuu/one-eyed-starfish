@@ -1,0 +1,70 @@
+{
+ "version": 1,
+ "sections": [
+  {
+   "id": "ideas",
+   "name": "Ideas",
+   "kind": "notes"
+  },
+  {
+   "id": "tasks",
+   "name": "Tasks",
+   "kind": "tasks"
+  },
+  {
+   "id": "gigs",
+   "name": "Gigs & Dates",
+   "kind": "notes"
+  },
+  {
+   "id": "info",
+   "name": "Info",
+   "kind": "notes"
+  },
+  {
+   "id": "links",
+   "name": "Links",
+   "kind": "notes"
+  }
+ ],
+ "entries": [
+  {
+   "id": "abstract",
+   "section": "info",
+   "title": "Abstract",
+   "body": "one-eyed starfish is a concert-length performance that uses myth and continuous music to explore how the universe (and the systems within them) come into being, organize themselves, and persist without conscious intention.",
+   "author": "purple",
+   "created": "2026-11-15T23:00:00.000Z",
+   "updated": null,
+   "pinned": true
+  },
+  {
+   "id": "members",
+   "section": "info",
+   "title": "Members",
+   "body": "Red – Bárbara Cotrim (violin)\nPurple – Pedro Mileu (electronics, e-bass)\nGreen – Jonathan Hartwig (drums)",
+   "author": "purple",
+   "created": "2026-11-15T23:00:00.000Z",
+   "updated": null
+  },
+  {
+   "id": "fragments",
+   "section": "ideas",
+   "title": "Spoken text fragments",
+   "body": "Prophecies, echoes, internal voices — collect lines here as they come.",
+   "author": "purple",
+   "created": "2026-11-15T23:00:00.000Z",
+   "updated": null
+  },
+  {
+   "id": "tryit",
+   "section": "tasks",
+   "title": "Try out this board",
+   "body": "Add an idea, tick a task, switch layouts (top left). Delete this when done.",
+   "author": "purple",
+   "created": "2026-11-15T23:00:00.000Z",
+   "updated": null,
+   "assignee": "any"
+  }
+ ]
+}
