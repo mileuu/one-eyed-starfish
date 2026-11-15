@@ -11,6 +11,11 @@
  "log": [
   {
    "by": "purple",
+   "at": "2026-11-15T23:31:35.104Z",
+   "what": "task added: \"Plan the residency (daily achievements and other goals)\""
+  },
+  {
+   "by": "purple",
    "at": "2026-11-15T23:31:05.969Z",
    "what": "task added: \"share email address\""
   },
@@ -39,6 +44,14 @@
      "done": false,
      "by": "purple",
      "at": "2026-11-15T23:31:05.969Z"
+    },
+    {
+     "id": "mwigxz5s7hihp",
+     "text": "Plan the residency (daily achievements and other goals)",
+     "who": "all",
+     "done": false,
+     "by": "purple",
+     "at": "2026-11-15T23:31:35.104Z"
     }
    ],
    "by": "purple"
