@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>one-eyed starfish · board</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Righteous&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%AD%90%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#060808; --panel:#0d1212; --panel2:#121a19; --line:#1f2b29; --line2:#2c3d3a;
+  --ink:#e4fff4; --dim:#8aa8a0; --faint:#5a716b;
+  --mint:#46f0b0; --teal:#3cd6d2; --mint-ink:#03130d;
+  --red:#ff4f63; --purple:#b46cff; --green:#5cf07c; --any:#8aa8a0;
+  --radius:14px;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  --sans:"Space Grotesk",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:15px; line-height:1.5;
+  min-height:100vh; overflow-x:hidden;
+}
+body::before{ /* grain + glow */
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(70,240,176,.13), transparent 60%),
+    radial-gradient(700px 500px at -10% 110%, rgba(60,214,210,.10), transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 1 0 0 0 0 .7 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+#app{position:relative; z-index:1}
+a{color:var(--mint)}
+button{font:inherit; color:inherit; cursor:pointer}
+input,textarea,select{font:inherit; color:var(--ink)}
+
+/* ---------- header ---------- */
+header.top{
+  display:flex; flex-wrap:wrap; align-items:center; gap:14px 20px;
+  padding:22px 28px 14px; max-width:1500px; margin:0 auto;
+}
+.logo{
+  font-family:Righteous,var(--sans); font-size:clamp(28px,4.2vw,46px); letter-spacing:.04em; line-height:1;
+  color:var(--bg); -webkit-text-stroke:1.6px var(--mint); text-transform:uppercase;
+  text-shadow:0 0 18px rgba(70,240,176,.35); margin:0; white-space:nowrap;
+}
+.logo small{display:block; -webkit-text-stroke:0; color:var(--dim); font-family:var(--mono); font-size:11px; letter-spacing:.25em; text-shadow:none; margin-top:6px}
+.spacer{flex:1}
+.status{font-family:var(--mono); font-size:11px; color:var(--dim); display:flex; align-items:center; gap:7px; white-space:nowrap}
+.status i{width:8px; height:8px; border-radius:50%; background:var(--faint); display:inline-block}
+.status.ok i{background:var(--mint); box-shadow:0 0 8px var(--mint)}
+.status.busy i{background:#ffd34f; animation:pulse 1s infinite}
+.status.err i{background:var(--red)}
+@keyframes pulse{50%{opacity:.3}}
+
+.me{display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:11px; color:var(--dim)}
+.dot{width:22px; height:22px; border-radius:50%; border:2px solid transparent; padding:0; background:var(--c); opacity:.35; transition:.15s}
+.dot:hover{opacity:.8}
+.dot.on{opacity:1; border-color:var(--ink); box-shadow:0 0 12px var(--c)}
+
+/* ---------- toolbar ---------- */
+.toolbar{
+  display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  padding:6px 28px 18px; max-width:1500px; margin:0 auto;
+}
+.seg{display:inline-flex; background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:3px}
+.seg button{background:none; border:0; padding:6px 13px; border-radius:999px; font-size:13px; color:var(--dim)}
+.seg button.on{background:var(--mint); color:var(--mint-ink); font-weight:600}
+.search{
+  background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:7px 14px; min-width:0; width:220px; outline:none;
+}
+.search:focus{border-color:var(--mint)}
+.btn{
+  background:var(--panel); border:1px solid var(--line2); border-radius:999px; padding:7px 14px; font-size:13px; white-space:nowrap;
+}
+.btn:hover{border-color:var(--mint)}
+.btn.primary{background:var(--mint); color:var(--mint-ink); border-color:var(--mint); font-weight:700; box-shadow:0 0 20px rgba(70,240,176,.25)}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.ghost{background:none}
+.whofilter{display:inline-flex; gap:5px; align-items:center}
+.whofilter .dot{width:18px; height:18px}
+
+main{padding:0 28px 80px; max-width:1500px; margin:0 auto}
+
+/* ---------- cards ---------- */
+.card{
+  --c:var(--any);
+  position:relative; background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--line); border-radius:var(--radius); padding:12px 14px 10px 16px;
+  break-inside:avoid; margin-bottom:12px; overflow:hidden;
+  transition:border-color .15s, transform .15s;
+}
+.card::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--c); box-shadow:0 0 12px var(--c)}
+.card:hover{border-color:var(--line2)}
+.card.red{--c:var(--red)} .card.purple{--c:var(--purple)} .card.green{--c:var(--green)}
+.card.pinned{border-color:rgba(70,240,176,.45)}
+.card.done{opacity:.55}
+.card.done h3{text-decoration:line-through}
+.stamp{display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:11px; color:var(--dim); margin-bottom:5px; flex-wrap:wrap}
+.stamp .date{color:var(--ink); background:rgba(255,255,255,.06); border:1px solid var(--line2); padding:1px 7px; border-radius:6px; letter-spacing:.03em}
+.stamp .time{color:var(--faint)}
+.stamp .by{color:var(--c); text-transform:uppercase; letter-spacing:.12em; font-weight:600}
+.stamp .pin{margin-left:auto; color:var(--mint)}
+.card h3{margin:2px 0 3px; font-size:16px; font-weight:600; line-height:1.3; display:flex; gap:8px; align-items:flex-start}
+.card .body{color:#c6e6dc; white-space:pre-wrap; word-wrap:break-word; overflow-wrap:anywhere; font-size:14px}
+.card .body:empty{display:none}
+.check{appearance:none; flex:none; width:18px; height:18px; margin-top:1px; border:2px solid var(--line2); border-radius:5px; background:none; cursor:pointer; position:relative}
+.check:checked{background:var(--mint); border-color:var(--mint)}
+.check:checked::after{content:""; position:absolute; left:4px; top:0; width:5px; height:10px; border:solid var(--mint-ink); border-width:0 2.5px 2.5px 0; transform:rotate(45deg)}
+.card footer{display:flex; align-items:center; gap:8px; margin-top:8px; font-size:11px; font-family:var(--mono); color:var(--faint); flex-wrap:wrap}
+.chip{border:1px solid var(--line2); border-radius:999px; padding:1px 8px; color:var(--dim)}
+.chip.assign{border-color:var(--ac); color:var(--ac)}
+.actions{margin-left:auto; display:flex; gap:2px; opacity:0; transition:.15s}
+.card:hover .actions,.card:focus-within .actions{opacity:1}
+@media (hover:none){.actions{opacity:1}}
+.actions button{background:none; border:0; color:var(--dim); padding:3px 6px; border-radius:6px; font-size:12px}
+.actions button:hover{background:rgba(255,255,255,.07); color:var(--ink)}
+.readonly .actions, .readonly .addcol, .readonly .check{pointer-events:none}
+.readonly .actions{display:none}
+
+/* ---------- layout: board ---------- */
+.board{display:grid; grid-auto-flow:column; grid-auto-columns:minmax(290px,1fr); gap:16px; overflow-x:auto; padding-bottom:16px; align-items:start}
+.col{background:rgba(13,18,18,.6); border:1px solid var(--line); border-radius:18px; padding:12px; backdrop-filter:blur(4px)}
+.colhead{display:flex; align-items:center; gap:8px; margin:2px 4px 12px}
+.colhead h2{margin:0; font-family:Righteous,var(--sans); font-weight:400; font-size:19px; letter-spacing:.04em; text-transform:uppercase}
+.colhead .n{font-family:var(--mono); font-size:11px; color:var(--faint)}
+.colhead .tools{margin-left:auto; display:flex; gap:2px}
+.iconbtn{background:none; border:0; color:var(--dim); width:28px; height:28px; border-radius:8px; font-size:15px; line-height:1}
+.iconbtn:hover{background:rgba(255,255,255,.07); color:var(--mint)}
+.addcol{width:100%; background:none; border:1px dashed var(--line2); color:var(--faint); border-radius:12px; padding:9px; font-size:13px}
+.addcol:hover{border-color:var(--mint); color:var(--mint)}
+.empty{color:var(--faint); font-size:13px; text-align:center; padding:18px 6px; font-family:var(--mono)}
+
+/* ---------- layout: timeline ---------- */
+.timeline{max-width:860px; margin:0 auto}
+.day{display:grid; grid-template-columns:120px 1fr; gap:20px; position:relative}
+.day::before{content:""; position:absolute; left:132px; top:8px; bottom:0; width:1px; background:linear-gradient(var(--line2),transparent)}
+.dayhead{position:sticky; top:12px; align-self:start; text-align:right; padding-top:4px}
+.dayhead .d{font-family:Righteous,var(--sans); font-size:38px; line-height:1; color:var(--bg); -webkit-text-stroke:1.2px var(--mint)}
+.dayhead .m{font-family:var(--mono); font-size:11px; letter-spacing:.2em; color:var(--dim); text-transform:uppercase}
+.dayhead .w{font-family:var(--mono); font-size:10px; color:var(--faint); text-transform:uppercase; letter-spacing:.15em}
+.daylist{padding:0 0 26px 14px}
+.timeline .card{margin-bottom:10px}
+.timeline .card::after{content:""; position:absolute}
+.sectag{font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--mint); border:1px solid rgba(70,240,176,.35); border-radius:999px; padding:1px 8px}
+
+/* ---------- layout: grid ---------- */
+.tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px}
+.tab{background:none; border:1px solid var(--line2); border-radius:999px; padding:6px 14px; font-family:Righteous,var(--sans); letter-spacing:.05em; text-transform:uppercase; font-size:14px; color:var(--dim)}
+.tab .n{font-family:var(--mono); font-size:10px; color:var(--faint); margin-left:4px}
+.tab.on{border-color:var(--mint); color:var(--mint); box-shadow:0 0 14px rgba(70,240,176,.2) inset}
+.masonry{columns:4 260px; column-gap:14px}
+
+/* ---------- modal ---------- */
+dialog{
+  background:var(--panel); color:var(--ink); border:1px solid var(--line2); border-radius:18px; padding:0;
+  width:min(560px,calc(100vw - 32px)); box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 40px rgba(70,240,176,.08);
+}
+dialog::backdrop{background:rgba(0,0,0,.65); backdrop-filter:blur(3px)}
+.dlg{padding:20px 22px 18px}
+.dlg h2{margin:0 0 4px; font-family:Righteous,var(--sans); font-weight:400; font-size:24px; letter-spacing:.04em; text-transform:uppercase}
+.dlg .sub{font-family:var(--mono); font-size:11px; color:var(--dim); margin-bottom:16px}
+.field{display:flex; flex-direction:column; gap:5px; margin-bottom:12px}
+.field label{font-family:var(--mono); font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:.12em}
+.field input,.field textarea,.field select{background:var(--bg); border:1px solid var(--line2); border-radius:10px; padding:9px 11px; outline:none; width:100%}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--mint)}
+.field textarea{min-height:130px; resize:vertical}
+.row{display:flex; gap:12px} .row .field{flex:1}
+.dlg .foot{display:flex; gap:8px; justify-content:flex-end; align-items:center; margin-top:6px}
+.dlg .foot .hint{margin-right:auto; font-family:var(--mono); font-size:10px; color:var(--faint)}
+.dlg p{color:#c6e6dc; font-size:14px}
+.dlg ol{padding-left:20px; color:#c6e6dc; font-size:14px} .dlg li{margin-bottom:6px}
+.dlg code{font-family:var(--mono); font-size:12px; background:var(--bg); padding:1px 5px; border-radius:5px; color:var(--mint)}
+.pickme{display:flex; gap:12px; margin:14px 0 6px}
+.pickme button{flex:1; background:var(--bg); border:2px solid var(--line2); border-radius:14px; padding:16px 8px; text-align:center}
+.pickme button b{display:block; font-family:Righteous,var(--sans); font-weight:400; font-size:20px; letter-spacing:.06em; color:var(--c); text-transform:uppercase}
+.pickme button span{font-size:11px; font-family:var(--mono); color:var(--dim)}
+.pickme button:hover{border-color:var(--c); box-shadow:0 0 18px color-mix(in srgb,var(--c) 35%,transparent)}
+
+.banner{max-width:1500px; margin:0 auto 14px; padding:0 28px}
+.banner div{border:1px dashed var(--line2); border-radius:12px; padding:9px 14px; font-size:13px; color:var(--dim); display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+.banner b{color:var(--ink)}
+
+.toast{position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(20px); opacity:0; background:var(--mint); color:var(--mint-ink); padding:9px 16px; border-radius:999px; font-weight:600; font-size:13px; transition:.25s; z-index:50; pointer-events:none}
+.toast.show{opacity:1; transform:translateX(-50%)}
+.toast.err{background:var(--red); color:#fff}
+
+@media (max-width:720px){
+  header.top{padding:16px 16px 10px}
+  .toolbar{padding:4px 16px 14px}
+  main{padding:0 16px 80px}
+  .banner{padding:0 16px}
+  .search{width:100%; order:10}
+  .board{grid-auto-flow:row; grid-auto-columns:auto; overflow:visible}
+  .day{grid-template-columns:1fr; gap:6px}
+  .day::before{display:none}
+  .dayhead{position:static; text-align:left; display:flex; gap:10px; align-items:baseline}
+  .dayhead .d{font-size:30px}
+  .daylist{padding:0 0 16px}
+  .row{flex-direction:column; gap:0}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<dialog id="dlg"><div class="dlg" id="dlgbody"></div></dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ config ============ */
+const CFG = { owner:'mileuu', repo:'one-eyed-starfish', branch:'data', path:'board.json' };
+const MEMBERS = {
+  red:    { name:'Red',    who:'violin' },
+  purple: { name:'Purple', who:'electronics · e-bass' },
+  green:  { name:'Green',  who:'drums' },
+};
+const params = new URLSearchParams(location.search);
+const LOCAL = params.has('local') || location.protocol === 'file:';
+const LS = {
+  get(k, d){ try{ const v = localStorage.getItem('oes.'+k); return v===null ? d : JSON.parse(v) }catch{ return d } },
+  set(k, v){ try{ localStorage.setItem('oes.'+k, JSON.stringify(v)) }catch{} },
+  del(k){ try{ localStorage.removeItem('oes.'+k) }catch{} },
+};
+
+/* ---- edit key from URL #key=... (never sent to any server) ---- */
+(function grabKey(){
+  const m = location.hash.match(/key=([^&]+)/);
+  if (m){ LS.set('key', decodeURIComponent(m[1])); history.replaceState(null,'',location.pathname+location.search) }
+})();
+
+/* ============ state ============ */
+const S = {
+  data:null, sha:null,
+  key: LS.get('key', null),
+  me: LS.get('me', null),
+  layout: LS.get('layout', 'board'),
+  tab: LS.get('tab', 'all'),
+  q:'', who:null,
+  status:'busy', statusText:'loading…',
+};
+const canEdit = () => LOCAL || !!S.key;
+
+/* ============ seed ============ */
+function seed(){
+  const now = new Date().toISOString();
+  const e = (section, title, body, author, extra={}) => ({ id:uid(), section, title, body, author, created:now, updated:null, ...extra });
+  return {
+    version:1,
+    sections:[
+      { id:'ideas', name:'Ideas', kind:'notes' },
+      { id:'tasks', name:'Tasks', kind:'tasks' },
+      { id:'gigs',  name:'Gigs & Dates', kind:'notes' },
+      { id:'info',  name:'Info', kind:'notes' },
+      { id:'links', name:'Links', kind:'notes' },
+    ],
+    entries:[
+      e('info','Abstract','one-eyed starfish is a concert-length performance that uses myth and continuous music to explore how the universe (and the systems within them) come into being, organize themselves, and persist without conscious intention.','purple',{pinned:true}),
+      e('info','Members','Red – Bárbara Cotrim (violin)\nPurple – Pedro Mileu (electronics, e-bass)\nGreen – Jonathan Hartwig (drums)','purple'),
+      e('ideas','Spoken text fragments','Prophecies, echoes, internal voices — collect lines here as they come.','purple'),
+      e('tasks','Try out this board','Add an idea, tick a task, switch layouts (top left).','purple',{assignee:'any'}),
+    ],
+  };
+}
+
+/* ============ storage (GitHub contents API, or localStorage for testing) ============ */
+const API = `https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${CFG.path}`;
+const b64enc = s => { const b = new TextEncoder().encode(s); let bin=''; for (let i=0;i<b.length;i+=0x8000) bin += String.fromCharCode.apply(null, b.subarray(i,i+0x8000)); return btoa(bin) };
+const b64dec = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\s/g,'')), c=>c.charCodeAt(0)));
+function headers(){ const h = { Accept:'application/vnd.github+json' }; if (S.key) h.Authorization = 'Bearer '+S.key; return h }
+
+async function load(){
+  if (LOCAL){
+    let d = LS.get('localdata', null);
+    if (!d){ d = seed(); LS.set('localdata', d); LS.set('localsha', 0) }
+    return { data:d, sha:String(LS.get('localsha', 0)) };
+  }
+  let r = await fetch(`${API}?ref=${CFG.branch}&t=${Date.now()}`, { headers:headers(), cache:'no-store' });
+  if (r.status === 401 && S.key){ throw Object.assign(new Error('Edit key was rejected'), { badKey:true }) }
+  if (r.ok){ const j = await r.json(); return { data:JSON.parse(b64dec(j.content)), sha:j.sha } }
+  if (r.status === 404) return { data:null, sha:null };
+  // rate-limited viewer → fall back to raw file
+  r = await fetch(`https://raw.githubusercontent.com/${CFG.owner}/${CFG.repo}/${CFG.branch}/${CFG.path}?t=${Date.now()}`, { cache:'no-store' });
+  if (!r.ok) throw new Error('Could not load board ('+r.status+')');
+  return { data: await r.json(), sha:null };
+}
+
+async function save(data, sha, message){
+  if (LOCAL){
+    const cur = String(LS.get('localsha', 0));
+    if (sha !== null && sha !== cur) throw Object.assign(new Error('conflict'), { conflict:true });
+    const next = String(+cur + 1);
+    LS.set('localdata', data); LS.set('localsha', next);
+    return next;
+  }
+  const body = { message, content: b64enc(JSON.stringify(data, null, 1)), branch: CFG.branch };
+  if (sha) body.sha = sha;
+  const r = await fetch(API, { method:'PUT', headers:{ ...headers(), 'Content-Type':'application/json' }, body:JSON.stringify(body) });
+  if (r.status === 409 || r.status === 422) throw Object.assign(new Error('conflict'), { conflict:true });
+  if (r.status === 401 || r.status === 403 || r.status === 404) throw Object.assign(new Error('Edit key has no write access'), { badKey:true });
+  if (!r.ok) throw new Error('Save failed ('+r.status+')');
+  return (await r.json()).content.sha;
+}
+
+/* Apply a change on top of the LATEST version, retrying on conflicts — so two people
+   saving at the same time never overwrite each other. */
+let queue = Promise.resolve();
+function mutate(fn, message){
+  fn(S.data); render();                // optimistic
+  setStatus('busy','saving…');
+  queue = queue.then(async () => {
+    for (let attempt=0; attempt<6; attempt++){
+      try{
+        const fresh = await load();
+        const data = fresh.data || seed();
+        fn(data);
+        const sha = await save(data, fresh.sha, `${MEMBERS[S.me]?.name || 'Someone'}: ${message}`);
+        S.data = data; S.sha = sha; render(); setStatus('ok','saved'); return;
+      }catch(err){
+        if (err.conflict){ await new Promise(r=>setTimeout(r, 300 + Math.random()*700)); continue }
+        console.error(err); setStatus('err', err.message); toast(err.message, true);
+        if (err.badKey) openKeyDialog();
+        await refresh(true); return;
+      }
+    }
+    setStatus('err','could not save — try again'); toast('Could not save, please try again', true);
+  });
+  return queue;
+}
+
+async function refresh(force){
+  if (!force && (document.hidden || dlg.open)) return;
+  try{
+    const { data, sha } = await load();
+    if (!data){
+      if (canEdit()){ const d = seed(); S.sha = await save(d, null, 'Create board'); S.data = d }
+      else { S.data = seed(); }
+    } else if (force || sha !== S.sha || !sha){ S.data = data; S.sha = sha }
+    else { setStatus('ok', canEdit() ? 'up to date' : 'view only'); return }
+    normalize(); render(); setStatus('ok', canEdit() ? 'up to date' : 'view only');
+  }catch(err){ console.error(err); setStatus('err', err.message); if (err.badKey){ toast('That edit key does not work', true); } if (!S.data){ S.data = { sections:[], entries:[] }; render() } }
+}
+function normalize(){ S.data.sections ||= []; S.data.entries ||= [] }
+
+/* ============ helpers ============ */
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7) }
+const pad = n => String(n).padStart(2,'0');
+const fmtDate = iso => { const d = new Date(iso); return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}` };
+const fmtTime = iso => { const d = new Date(iso); return `${pad(d.getHours())}:${pad(d.getMinutes())}` };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const linkify = s => esc(s).replace(/(https?:\/\/[^\s<]+[^\s<.,;:!?)\]'"])/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+const section = id => S.data.sections.find(s => s.id === id);
+function setStatus(kind, text){ S.status = kind; S.statusText = text; const el = document.querySelector('.status'); if (el){ el.className = 'status '+kind; el.lastChild.textContent = text } }
+let toastT; function toast(msg, err){ const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show' + (err?' err':''); clearTimeout(toastT); toastT = setTimeout(()=>t.className='toast'+(err?' err':''), 2600) }
+
+function visible(list){
+  const q = S.q.trim().toLowerCase();
+  return list.filter(e =>
+    (!S.who || e.author === S.who || e.assignee === S.who) &&
+    (!q || (e.title+' '+e.body).toLowerCase().includes(q)));
+}
+function sorted(list){
+  return [...list].sort((a,b) =>
+    (!!b.pinned - !!a.pinned) || (!!a.done - !!b.done) || (b.created.localeCompare(a.created)));
+}
+
+/* ============ render ============ */
+const dlg = document.getElementById('dlg');
+const app = document.getElementById('app');
+
+function cardHTML(e, opts={}){
+  const sec = section(e.section);
+  const isTask = sec?.kind === 'tasks';
+  const edited = e.updated ? `<span title="edited ${fmtDate(e.updated)} ${fmtTime(e.updated)}">edited ${fmtDate(e.updated)}</span>` : '';
+  const assign = isTask && e.assignee && e.assignee !== 'any'
+    ? `<span class="chip assign" style="--ac:var(--${e.assignee})">→ ${MEMBERS[e.assignee].name}</span>`
+    : isTask ? `<span class="chip">→ anyone</span>` : '';
+  return `<article class="card ${e.author||''} ${e.pinned?'pinned':''} ${e.done?'done':''}" data-id="${e.id}">
+    <div class="stamp">
+      <span class="date">${fmtDate(e.created)}</span><span class="time">${fmtTime(e.created)}</span>
+      ${e.author ? `<span class="by">${MEMBERS[e.author]?.name||''}</span>` : ''}
+      ${opts.showSection && sec ? `<span class="sectag">${esc(sec.name)}</span>` : ''}
+      ${e.pinned ? '<span class="pin" title="pinned">★</span>' : ''}
+    </div>
+    <h3>${isTask ? `<input type="checkbox" class="check" data-act="done" ${e.done?'checked':''} aria-label="done">` : ''}<span>${esc(e.title)}</span></h3>
+    <div class="body">${linkify(e.body)}</div>
+    <footer>${assign}${edited}
+      <span class="actions">
+        <button data-act="pin">${e.pinned?'unpin':'pin'}</button>
+        <button data-act="edit">edit</button>
+        <button data-act="del">delete</button>
+      </span>
+    </footer>
+  </article>`;
+}
+
+function render(){
+  if (!S.data) return;
+  const ro = !canEdit();
+  const dots = Object.entries(MEMBERS).map(([k,m]) =>
+    `<button class="dot ${S.me===k?'on':''}" style="--c:var(--${k})" data-me="${k}" title="I am ${m.name}"></button>`).join('');
+  const whoDots = Object.entries(MEMBERS).map(([k,m]) =>
+    `<button class="dot ${S.who===k?'on':''}" style="--c:var(--${k})" data-who="${k}" title="only ${m.name}"></button>`).join('');
+
+  let body = '';
+  if (S.layout === 'board') body = renderBoard();
+  else if (S.layout === 'timeline') body = renderTimeline();
+  else body = renderGrid();
+
+  const active = document.activeElement?.classList.contains('search');
+  app.innerHTML = `
+  <header class="top">
+    <h1 class="logo">one-eyed starfish<small>// shared board</small></h1>
+    <div class="spacer"></div>
+    ${ro ? '' : `<div class="me">I am ${dots}</div>`}
+    <div class="status ${S.status}"><i></i><span>${esc(S.statusText)}</span></div>
+  </header>
+  ${ro && !LOCAL ? `<div class="banner"><div>👁 <b>View only.</b> Open the edit link once on this device to write here. <button class="btn ghost" data-act="key">I have an edit key</button></div></div>` : ''}
+  <div class="toolbar">
+    <div class="seg">
+      <button data-layout="board" class="${S.layout==='board'?'on':''}">Board</button>
+      <button data-layout="timeline" class="${S.layout==='timeline'?'on':''}">Timeline</button>
+      <button data-layout="grid" class="${S.layout==='grid'?'on':''}">Cards</button>
+    </div>
+    <input class="search" type="search" placeholder="search…" value="${esc(S.q)}">
+    <span class="whofilter">${whoDots}</span>
+    <div class="spacer"></div>
+    ${ro ? '' : `<button class="btn ghost" data-act="settings" title="sections & edit link">⚙</button>
+    <button class="btn primary" data-act="new">+ New</button>`}
+  </div>
+  <main class="${ro?'readonly':''}">${body}</main>`;
+  if (active){ const s = app.querySelector('.search'); s.focus(); s.setSelectionRange(s.value.length, s.value.length) }
+}
+
+function renderBoard(){
+  return `<div class="board">${S.data.sections.map(sec => {
+    const all = S.data.entries.filter(e => e.section === sec.id);
+    const list = sorted(visible(all));
+    const open = sec.kind==='tasks' ? all.filter(e=>!e.done).length + ' open' : all.length;
+    return `<section class="col" data-section="${sec.id}">
+      <div class="colhead"><h2>${esc(sec.name)}</h2><span class="n">${open}</span>
+        <span class="tools"><button class="iconbtn" data-act="new" data-section="${sec.id}" title="add to ${esc(sec.name)}">+</button></span></div>
+      ${list.map(e => cardHTML(e)).join('') || `<div class="empty">nothing yet</div>`}
+      <button class="addcol" data-act="new" data-section="${sec.id}">+ add ${sec.kind==='tasks'?'task':'note'}</button>
+    </section>`;
+  }).join('')}</div>`;
+}
+
+function renderTimeline(){
+  const list = visible(S.data.entries).sort((a,b) => b.created.localeCompare(a.created));
+  if (!list.length) return `<div class="empty">nothing here yet</div>`;
+  const days = new Map();
+  for (const e of list){ const k = e.created.slice(0,10) && fmtDate(e.created); if (!days.has(k)) days.set(k, []); days.get(k).push(e) }
+  return `<div class="timeline">${[...days].map(([k, es]) => {
+    const d = new Date(es[0].created);
+    return `<div class="day"><div class="dayhead">
+        <div class="d">${pad(d.getDate())}</div>
+        <div class="m">${d.toLocaleString('en',{month:'short'})} ${d.getFullYear()}</div>
+        <div class="w">${d.toLocaleString('en',{weekday:'long'})}</div></div>
+      <div class="daylist">${es.map(e => cardHTML(e, {showSection:true})).join('')}</div></div>`;
+  }).join('')}</div>`;
+}
+
+function renderGrid(){
+  if (S.tab !== 'all' && !section(S.tab)) S.tab = 'all';
+  const tabs = [{id:'all', name:'All'}, ...S.data.sections].map(s => {
+    const n = s.id==='all' ? S.data.entries.length : S.data.entries.filter(e=>e.section===s.id).length;
+    return `<button class="tab ${S.tab===s.id?'on':''}" data-tab="${s.id}">${esc(s.name)}<span class="n">${n}</span></button>`;
+  }).join('');
+  const list = sorted(visible(S.data.entries.filter(e => S.tab==='all' || e.section===S.tab)));
+  return `<div class="tabs">${tabs}</div>
+    <div class="masonry">${list.map(e => cardHTML(e, {showSection:S.tab==='all'})).join('') || '<div class="empty">nothing here yet</div>'}</div>`;
+}
+
+/* ============ dialogs ============ */
+function openDialog(html, onMount){ document.getElementById('dlgbody').innerHTML = html; dlg.showModal(); onMount?.(dlg) }
+function closeDialog(){ dlg.close() }
+dlg.addEventListener('click', e => { if (e.target === dlg) closeDialog() });
+
+function pickMe(then){
+  openDialog(`<h2>Who are you?</h2><div class="sub">just so we know who wrote what — remembered on this device</div>
+    <div class="pickme">${Object.entries(MEMBERS).map(([k,m]) =>
+      `<button style="--c:var(--${k})" data-pick="${k}"><b>${m.name}</b><span>${m.who}</span></button>`).join('')}</div>`,
+    d => d.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => {
+      S.me = b.dataset.pick; LS.set('me', S.me); closeDialog(); render(); then?.();
+    }));
+}
+
+function openEditor(entry, sectionId){
+  if (!S.me) return pickMe(() => openEditor(entry, sectionId));
+  const isNew = !entry;
+  const e = entry || { section: sectionId || (S.layout==='grid' && S.tab!=='all' ? S.tab : S.data.sections[0]?.id), title:'', body:'', assignee:'any' };
+  const opts = S.data.sections.map(s => `<option value="${s.id}" ${s.id===e.section?'selected':''}>${esc(s.name)}</option>`).join('');
+  const now = new Date().toISOString();
+  openDialog(`<form method="dialog" id="ef">
+    <h2>${isNew ? 'New entry' : 'Edit entry'}</h2>
+    <div class="sub">${isNew ? `${fmtDate(now)} · ${fmtTime(now)} · ${MEMBERS[S.me].name}` : `created ${fmtDate(e.created)} ${fmtTime(e.created)} by ${MEMBERS[e.author]?.name||'?'}`}</div>
+    <div class="row">
+      <div class="field"><label>Section</label><select name="section">${opts}</select></div>
+      <div class="field" id="assignf"><label>Who does it</label><select name="assignee">
+        <option value="any">anyone</option>${Object.entries(MEMBERS).map(([k,m]) => `<option value="${k}" ${e.assignee===k?'selected':''}>${m.name}</option>`).join('')}
+      </select></div>
+    </div>
+    <div class="field"><label>Title</label><input name="title" required maxlength="200" value="${esc(e.title)}" autocomplete="off"></div>
+    <div class="field"><label>Details</label><textarea name="body" placeholder="write freely — links become clickable">${esc(e.body)}</textarea></div>
+    <div class="foot"><span class="hint">ctrl/⌘ + enter to save</span>
+      <button type="button" class="btn ghost" data-close>Cancel</button>
+      <button class="btn primary">${isNew ? 'Post' : 'Save'}</button></div>
+  </form>`, d => {
+    const f = d.querySelector('#ef');
+    const syncAssign = () => d.querySelector('#assignf').style.display = section(f.section.value)?.kind==='tasks' ? '' : 'none';
+    f.section.onchange = syncAssign; syncAssign();
+    d.querySelector('[data-close]').onclick = closeDialog;
+    f.addEventListener('keydown', ev => { if (ev.key==='Enter' && (ev.metaKey||ev.ctrlKey)) f.requestSubmit() });
+    f.title.focus();
+    f.onsubmit = ev => {
+      ev.preventDefault();
+      const v = { section:f.section.value, title:f.title.value.trim(), body:f.body.value.trim(), assignee:f.assignee.value };
+      if (!v.title) return;
+      if (section(v.section)?.kind !== 'tasks') delete v.assignee;
+      closeDialog();
+      if (isNew){
+        const ne = { id:uid(), ...v, author:S.me, created:new Date().toISOString(), updated:null };
+        mutate(d => d.entries.push(ne), `add "${v.title}"`);
+      } else {
+        const id = entry.id;
+        mutate(d => { const x = d.entries.find(x => x.id===id); if (x) Object.assign(x, v, { updated:new Date().toISOString() }) }, `edit "${v.title}"`);
+      }
+    };
+  });
+}
+
+function openSettings(){
+  const link = S.key ? `${location.origin}${location.pathname}#key=${encodeURIComponent(S.key)}` : '';
+  openDialog(`<h2>Settings</h2><div class="sub">sections are shared · edit link stays private</div>
+    <div class="field"><label>Sections</label>
+      ${S.data.sections.map((s,i) => `<div class="row" style="align-items:center;gap:6px;margin-bottom:6px">
+        <input data-sname="${s.id}" value="${esc(s.name)}" style="flex:1;background:var(--bg);border:1px solid var(--line2);border-radius:10px;padding:7px 10px">
+        <select data-skind="${s.id}" style="background:var(--bg);border:1px solid var(--line2);border-radius:10px;padding:7px"><option value="notes" ${s.kind==='notes'?'selected':''}>notes</option><option value="tasks" ${s.kind==='tasks'?'selected':''}>tasks</option></select>
+        <button class="iconbtn" data-up="${i}" title="move left">↑</button>
+        <button class="iconbtn" data-sdel="${s.id}" title="delete section">✕</button></div>`).join('')}
+      <button class="addcol" data-sadd>+ add section</button>
+    </div>
+    ${LOCAL ? '<p><code>local test mode</code> — data only lives in this browser.</p>' : `
+    <div class="field"><label>Edit link (send only to the band)</label>
+      <div class="row" style="gap:6px"><input readonly value="${esc(link)}" id="elink" style="flex:1"><button class="btn" data-copy>Copy</button></div></div>
+    <p style="font-size:12px;color:var(--faint)">Anyone with this link can edit. <button class="btn ghost" data-forget style="font-size:11px;padding:3px 9px">Remove key from this device</button></p>`}
+    <div class="foot"><button class="btn primary" data-close>Done</button></div>`, d => {
+    d.querySelector('[data-close]').onclick = closeDialog;
+    d.querySelectorAll('[data-sname]').forEach(inp => inp.onchange = () => {
+      const id = inp.dataset.sname, name = inp.value.trim(); if (!name) return;
+      mutate(x => { const s = x.sections.find(s=>s.id===id); if (s) s.name = name }, `rename section to ${name}`);
+    });
+    d.querySelectorAll('[data-skind]').forEach(sel => sel.onchange = () => {
+      const id = sel.dataset.skind, kind = sel.value;
+      mutate(x => { const s = x.sections.find(s=>s.id===id); if (s) s.kind = kind }, `section type → ${kind}`);
+    });
+    d.querySelectorAll('[data-up]').forEach(b => b.onclick = () => {
+      const i = +b.dataset.up; if (!i) return; const id = S.data.sections[i].id;
+      mutate(x => { const j = x.sections.findIndex(s=>s.id===id); if (j>0){ const [s] = x.sections.splice(j,1); x.sections.splice(j-1,0,s) } }, 'reorder sections');
+      setTimeout(openSettings, 0);
+    });
+    d.querySelectorAll('[data-sdel]').forEach(b => b.onclick = () => {
+      const id = b.dataset.sdel, s = section(id), n = S.data.entries.filter(e=>e.section===id).length;
+      if (!confirm(`Delete section "${s.name}"${n ? ` and its ${n} entries` : ''}?`)) return;
+      mutate(x => { x.sections = x.sections.filter(s=>s.id!==id); x.entries = x.entries.filter(e=>e.section!==id) }, `delete section ${s.name}`);
+      setTimeout(openSettings, 0);
+    });
+    d.querySelector('[data-sadd]').onclick = () => {
+      const name = prompt('Section name?'); if (!name?.trim()) return;
+      const kind = confirm('Is this a to-do list (with checkboxes)?\nOK = tasks, Cancel = notes') ? 'tasks' : 'notes';
+      const ns = { id:uid(), name:name.trim(), kind };
+      mutate(x => x.sections.push(ns), `add section ${ns.name}`);
+      setTimeout(openSettings, 0);
+    };
+    d.querySelector('[data-copy]')?.addEventListener('click', () => { navigator.clipboard.writeText(link).then(()=>toast('Edit link copied')) });
+    d.querySelector('[data-forget]')?.addEventListener('click', () => { if (confirm('Remove the edit key from this device? (the board stays as it is)')){ LS.del('key'); S.key = null; closeDialog(); render() } });
+  });
+}
+
+function openKeyDialog(){
+  openDialog(`<h2>Edit key</h2><div class="sub">only needed once per device</div>
+    <p>Easiest: ask a bandmate for the <b>edit link</b> and open it. Or paste the key here:</p>
+    <form id="kf"><div class="field"><input name="k" type="password" placeholder="github_pat_…" autocomplete="off"></div>
+    <div class="foot"><button type="button" class="btn ghost" data-close>Cancel</button><button class="btn primary">Use key</button></div></form>`, d => {
+    d.querySelector('[data-close]').onclick = closeDialog;
+    d.querySelector('#kf').onsubmit = ev => { ev.preventDefault(); const k = ev.target.k.value.trim(); if (!k) return;
+      S.key = k; LS.set('key', k); closeDialog(); refresh(true).then(render) };
+  });
+}
+
+/* ============ events ============ */
+app.addEventListener('click', ev => {
+  const t = ev.target.closest('button,[data-act],input.check'); if (!t) return;
+  if (t.dataset.layout){ S.layout = t.dataset.layout; LS.set('layout', S.layout); return render() }
+  if (t.dataset.tab){ S.tab = t.dataset.tab; LS.set('tab', S.tab); return render() }
+  if (t.dataset.me){ S.me = t.dataset.me; LS.set('me', S.me); return render() }
+  if (t.dataset.who){ S.who = S.who === t.dataset.who ? null : t.dataset.who; return render() }
+  const act = t.dataset.act; if (!act) return;
+  if (act === 'key') return openKeyDialog();
+  if (!canEdit()) return;
+  if (act === 'new') return openEditor(null, t.dataset.section);
+  if (act === 'settings') return openSettings();
+  const card = t.closest('.card'); if (!card) return;
+  const id = card.dataset.id, e = S.data.entries.find(x => x.id===id); if (!e) return;
+  if (act === 'edit') return openEditor(e);
+  if (act === 'del'){ if (confirm(`Delete "${e.title}"?`)) mutate(d => { d.entries = d.entries.filter(x => x.id!==id) }, `delete "${e.title}"`); return }
+  if (act === 'pin') return mutate(d => { const x = d.entries.find(x=>x.id===id); if (x) x.pinned = !x.pinned }, `${e.pinned?'unpin':'pin'} "${e.title}"`);
+  if (act === 'done'){ if (!S.me) { ev.preventDefault(); return pickMe() } const v = t.checked; return mutate(d => { const x = d.entries.find(x=>x.id===id); if (x){ x.done = v; x.doneAt = v ? new Date().toISOString() : null } }, `${v?'done':'reopen'} "${e.title}"`) }
+});
+app.addEventListener('input', ev => { if (ev.target.classList.contains('search')){ S.q = ev.target.value; render() } });
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'n' && !dlg.open && canEdit() && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){ ev.preventDefault(); openEditor() }
+});
+document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh() });
+
+/* ============ go ============ */
+render();
+refresh(true);
+setInterval(refresh, canEdit() ? 20000 : 60000);
+</script>
+</body>
+</html>
