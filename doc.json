@@ -1,5 +1,5 @@
 {
- "version": 2,
+ "version": 3,
  "blocks": [
   {
    "id": "mwighkd5ukyyr",
@@ -11,9 +11,24 @@
  "log": [
   {
    "by": "purple",
+   "at": "2026-11-15T23:30:43.817Z",
+   "what": "list \"Tasks\" created"
+  },
+  {
+   "by": "purple",
    "at": "2026-11-15T23:18:48.975Z",
    "added": 1,
    "removed": 0
   }
- ]
+ ],
+ "todos": [
+  {
+   "id": "mwigwvl4vus3g",
+   "title": "Tasks",
+   "until": "",
+   "items": [],
+   "by": "purple"
+  }
+ ],
+ "events": []
 }
