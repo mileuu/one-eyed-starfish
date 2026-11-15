@@ -11,6 +11,11 @@
  "log": [
   {
    "by": "purple",
+   "at": "2026-11-15T23:31:05.969Z",
+   "what": "task added: \"share email address\""
+  },
+  {
+   "by": "purple",
    "at": "2026-11-15T23:30:43.817Z",
    "what": "list \"Tasks\" created"
   },
@@ -26,7 +31,16 @@
    "id": "mwigwvl4vus3g",
    "title": "Tasks",
    "until": "",
-   "items": [],
+   "items": [
+    {
+     "id": "mwigxcohzyzqf",
+     "text": "share email address",
+     "who": "red",
+     "done": false,
+     "by": "purple",
+     "at": "2026-11-15T23:31:05.969Z"
+    }
+   ],
    "by": "purple"
   }
  ],
