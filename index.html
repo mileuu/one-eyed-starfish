@@ -7,126 +7,182 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230c0c0c'/%3E%3Ccircle cx='50' cy='50' r='22' fill='%23ff4a3d'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23000'/%3E%3Ccircle cx='50' cy='50' r='22' fill='%23ff3b1f'/%3E%3C/svg%3E">
 <style>
 :root{
-  --bg:#0b0b0c; --panel:#131315; --panel2:#18181b; --line:#25252a; --line2:#34343b;
-  --ink:#ece9e2; --dim:#8d8a84; --faint:#55534f;
-  --accent:#d4ff3a;
-  --c-purple:#a07bff; --c-red:#ff4a3d; --c-green:#3fdc7c;
-  --sans:"Archivo",system-ui,sans-serif;
+  --bg:#000; --line:#262626; --rule:#e9e7e2; --ink:#f1efea; --text:#dcd9d2; --dim:#8a8a8a; --faint:#555;
+  --accent:#ff3b1f;
+  --c-purple:#a07bff; --c-red:#ff4a3d; --c-green:#3fdc7c; --c-all:#8a8a8a;
+  --serif:"Source Serif 4",Georgia,serif;
   --mono:"IBM Plex Mono",ui-monospace,monospace;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--bg); color:var(--ink); font-family:var(--sans); min-height:100vh; overflow-x:hidden; -webkit-font-smoothing:antialiased}
-body::before{ /* light film grain */
-  content:""; position:fixed; inset:0; pointer-events:none; z-index:100; opacity:.5; mix-blend-mode:overlay;
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .12 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-a{color:var(--accent)}
-button{font:inherit; color:inherit; cursor:pointer}
-.wrap{max-width:900px; margin:0 auto; padding:28px 22px 90px}
+body{background:var(--bg); color:var(--ink); font-family:var(--serif); min-height:100vh; overflow-x:hidden; -webkit-font-smoothing:antialiased}
+a{color:var(--ink); text-decoration-color:var(--faint); text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ink)}
+button{font:inherit; color:inherit; cursor:pointer; background:none; border:0; padding:0}
+input,select,textarea{font:inherit; color:inherit}
+.wrap{max-width:1220px; margin:0 auto; padding:28px 28px 100px}
 
-/* ---------- header: plain type + halftone colour field ---------- */
-.hero{position:relative; height:210px; border-radius:16px; overflow:hidden; background:var(--panel); border:1px solid var(--line); isolation:isolate}
-.hero .fade{position:absolute; inset:0;
-  -webkit-mask-image:radial-gradient(ellipse 75% 140% at 92% 45%, #000 30%, transparent 78%);
-          mask-image:radial-gradient(ellipse 75% 140% at 92% 45%, #000 30%, transparent 78%)}
-.hero .halftone{position:absolute; inset:0;
-  background:
-    radial-gradient(circle at 84% 38%, #ff2b1f 0 16%, transparent 17%),
-    radial-gradient(circle at 66% 90%, #2348ff 0 18%, transparent 40%),
-    radial-gradient(circle at 100% 100%, #3fdc7c 0 12%, transparent 34%),
-    linear-gradient(150deg, #ffb21a 0%, #ff4fa3 55%, #2348ff 100%);
-  -webkit-mask-image:radial-gradient(circle, #000 2.4px, transparent 2.9px); -webkit-mask-size:9px 9px;
-          mask-image:radial-gradient(circle, #000 2.4px, transparent 2.9px);         mask-size:9px 9px}
-.hero .txt{position:absolute; inset:0; padding:20px 24px 22px; display:flex; flex-direction:column; justify-content:space-between}
-.hero .meta{font-family:var(--mono); font-size:11px; color:var(--dim); letter-spacing:.02em}
-.hero h1{margin:0; font-weight:700; font-stretch:115%; font-size:clamp(34px,6.4vw,62px); line-height:.92; letter-spacing:-.03em; text-transform:lowercase}
-.legend{display:flex; gap:14px; flex-wrap:wrap; margin-top:12px; font-family:var(--mono); font-size:11px; color:var(--dim)}
-.legend span::before{content:""; display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--c); margin-right:6px; vertical-align:0}
-.tag{font-family:var(--mono); font-size:11px; font-weight:500; text-transform:lowercase; color:var(--c); white-space:nowrap; display:inline-flex; align-items:center; gap:6px; line-height:1.4}
-.tag::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--c)}
-.tag.purple,.legend .purple{--c:var(--c-purple)} .tag.red,.legend .red{--c:var(--c-red)} .tag.green,.legend .green{--c:var(--c-green)}
+/* ---------- header tile ---------- */
+.hero{position:relative; height:230px; border-radius:14px; overflow:hidden; background:#050505; isolation:isolate}
+.hero svg.tex{position:absolute; inset:0; width:100%; height:100%; display:block}
+.hero .shade{position:absolute; inset:0; background:
+  linear-gradient(90deg, rgba(0,0,0,.92) 0%, rgba(0,0,0,.55) 38%, rgba(0,0,0,0) 70%),
+  linear-gradient(0deg, rgba(0,0,0,.6) 0%, rgba(0,0,0,0) 45%)}
+.hero .grain{position:absolute; inset:0; opacity:.35; mix-blend-mode:overlay;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.hero .txt{position:absolute; inset:0; padding:22px 26px; display:flex; flex-direction:column; justify-content:space-between}
+.hero .meta{font-family:var(--mono); font-size:12px; color:#b5b3ad}
+.hero h1{margin:0; font-weight:500; font-size:clamp(36px,5.6vw,64px); line-height:.95; letter-spacing:-.02em}
+.legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:12px; font-family:var(--mono); font-size:12px; color:#b5b3ad}
 
-/* ---------- bar ---------- */
-.bar{display:flex; align-items:center; gap:12px; margin:20px 2px 14px; flex-wrap:wrap; font-family:var(--mono); font-size:12px; color:var(--dim)}
+.tag{font-family:var(--mono); font-size:12px; color:var(--c); white-space:nowrap; display:inline-flex; align-items:center; gap:6px}
+.tag::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--c); flex:none}
+.purple{--c:var(--c-purple)} .red{--c:var(--c-red)} .green{--c:var(--c-green)} .all{--c:var(--c-all)}
+
+/* ---------- top bar ---------- */
+.bar{display:flex; align-items:center; gap:14px; margin:14px 2px 0; flex-wrap:wrap; font-family:var(--mono); font-size:12px; color:var(--dim)}
 .bar .spacer{flex:1}
 .status{display:inline-flex; align-items:center; gap:7px}
-.status i{width:7px; height:7px; border-radius:50%; background:var(--faint)}
+.status i{width:6px; height:6px; border-radius:50%; background:var(--faint)}
 .status.ok i{background:var(--c-green)} .status.busy i{background:#ffb02e; animation:p 1s infinite} .status.err i{background:var(--c-red)}
 @keyframes p{50%{opacity:.3}}
-.btn{font-family:var(--mono); font-size:13px; font-weight:500; border:1px solid var(--line2); background:var(--panel2); border-radius:999px; padding:8px 18px; white-space:nowrap; transition:.15s}
-.btn:hover{border-color:var(--ink)}
-.btn.go{background:var(--accent); color:#111; border-color:var(--accent)}
-.btn.go:hover{filter:brightness(1.08)}
-.btn:disabled{opacity:.5; cursor:default}
-.btn.plain{border-color:transparent; background:none; color:var(--dim); padding:8px 6px; text-decoration:underline; text-underline-offset:3px}
-.btn.plain:hover{color:var(--ink)}
+.link{font-family:var(--mono); font-size:12px; color:var(--dim); text-decoration:underline; text-underline-offset:3px; text-decoration-color:var(--faint)}
+.link:hover{color:var(--ink)}
 
-/* ---------- the document ---------- */
-.doc{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:10px 30px}
-.para{display:grid; grid-template-columns:118px 1fr; gap:22px; padding:16px 0; border-top:1px solid var(--line)}
-.para:first-child{border-top:0}
-.stamp{font-family:var(--mono); font-size:11px; color:var(--dim); padding-top:4px; display:flex; flex-direction:column; align-items:flex-start; gap:3px}
-.stamp .d{color:var(--ink)}
-.stamp .t{color:var(--faint)}
-.para .text{font-size:18px; line-height:1.6; white-space:pre-wrap; overflow-wrap:anywhere; border-left:2px solid var(--c); padding-left:18px; color:#dedad2}
-.para.purple{--c:var(--c-purple)} .para.red{--c:var(--c-red)} .para.green{--c:var(--c-green)}
-.para.fresh .text{background:linear-gradient(90deg, color-mix(in srgb,var(--c) 9%,transparent), transparent 60%)}
-.empty{font-family:var(--mono); color:var(--faint); text-align:center; padding:56px 0; font-size:13px}
+/* ---------- page grid ---------- */
+.grid{display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:56px; margin-top:34px; align-items:start}
+aside{position:sticky; top:24px}
 
-.editor{padding:22px 30px 22px}
-.editor textarea{width:100%; min-height:60vh; border:0; outline:none; resize:vertical; background:transparent; font-family:var(--sans); font-size:18px; line-height:1.6; color:var(--ink)}
-.editor .hint{font-family:var(--mono); font-size:11px; color:var(--dim); margin:0 0 16px; padding:9px 12px; border:1px solid var(--line); border-radius:10px; display:flex; gap:6px; flex-wrap:wrap; align-items:center}
-.editor .foot{display:flex; gap:10px; justify-content:flex-end; align-items:center; margin-top:14px}
+/* ---------- sections (style of the reference) ---------- */
+section{margin-bottom:54px}
+.shead{display:flex; align-items:baseline; gap:14px; padding-bottom:10px; border-bottom:1px solid var(--rule)}
+.shead h2{margin:0; font-family:var(--mono); font-weight:400; font-size:14px; color:var(--dim)}
+.shead .spacer{flex:1}
+.shead .link{font-size:12px}
+.rowline{border-bottom:1px solid var(--line)}
+.empty{font-family:var(--mono); font-size:12px; color:var(--faint); padding:18px 0}
+.acts{display:inline-flex; gap:10px; opacity:0; transition:opacity .12s; font-family:var(--mono); font-size:11px; color:var(--dim); margin-left:auto; flex:none}
+.acts button:hover{color:var(--ink)}
+*:hover>.acts, *:focus-within>.acts{opacity:1}
+@media (hover:none){ .acts{opacity:1} }
+.ro .acts, .ro .addrow{display:none}
 
-/* ---------- history ---------- */
-details.hist{margin:24px 2px 0; font-family:var(--mono); font-size:12px; color:var(--dim)}
+/* ---------- upcoming ---------- */
+.ev{display:grid; grid-template-columns:96px 1fr auto; gap:14px; align-items:baseline; padding:15px 0; border-bottom:1px solid var(--line)}
+.ev .d{font-family:var(--mono); font-size:14px; color:var(--ink)}
+.ev .t{font-size:19px; line-height:1.3; color:var(--ink)}
+.ev .t span{color:var(--dim)}
+.ev.today .d{color:var(--accent)}
+.ev.past{opacity:.45}
+
+/* ---------- to-do ---------- */
+.list{margin-top:26px}
+.lhead{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; padding-bottom:8px; border-bottom:1px solid var(--line)}
+.lhead h3{margin:0; font-weight:500; font-size:22px; letter-spacing:-.01em}
+.lhead .until{font-family:var(--mono); font-size:12px; color:var(--dim)}
+.lhead .until.late{color:var(--accent)}
+.lhead .count{font-family:var(--mono); font-size:12px; color:var(--faint)}
+.task{display:flex; align-items:baseline; gap:14px; padding:11px 0; border-bottom:1px solid var(--line)}
+.task .tag{width:76px; flex:none}
+.task .tt{font-size:18px; line-height:1.4; color:var(--text); overflow-wrap:anywhere}
+.task.done .tt{text-decoration:line-through; text-decoration-color:var(--faint); color:var(--faint)}
+.task.done .tag{opacity:.45}
+.check{appearance:none; -webkit-appearance:none; flex:none; width:15px; height:15px; margin:0; border:1px solid var(--dim); border-radius:3px; cursor:pointer; position:relative; top:2px; background:none}
+.check:hover{border-color:var(--ink)}
+.check:checked{background:var(--ink); border-color:var(--ink)}
+.check:checked::after{content:""; position:absolute; left:4px; top:1px; width:4px; height:8px; border:solid #000; border-width:0 2px 2px 0; transform:rotate(45deg)}
+.addrow{display:flex; gap:10px; align-items:center; padding:9px 0; border-bottom:1px solid var(--line)}
+.addrow select{background:#000; border:1px solid var(--line); border-radius:6px; font-family:var(--mono); font-size:12px; padding:5px 6px; color:var(--dim); flex:none}
+.addrow input{flex:1; min-width:0; background:none; border:0; outline:none; font-size:17px; padding:4px 0; color:var(--ink)}
+.addrow input::placeholder{color:var(--faint)}
+.addrow button{font-family:var(--mono); font-size:12px; color:var(--dim)}
+.addrow button:hover{color:var(--ink)}
+
+/* ---------- info document ---------- */
+.para{display:grid; grid-template-columns:150px 1fr; gap:20px; padding:16px 0; border-bottom:1px solid var(--line)}
+.stamp{font-family:var(--mono); font-size:12px; color:var(--dim); display:flex; flex-direction:column; gap:3px; padding-top:4px}
+.stamp .d{color:var(--ink); font-size:14px}
+.para .text{font-size:19px; line-height:1.6; white-space:pre-wrap; overflow-wrap:anywhere; color:var(--text); border-left:2px solid var(--c); padding-left:18px}
+.para.fresh .text{background:linear-gradient(90deg, color-mix(in srgb,var(--c) 8%,transparent), transparent 55%)}
+.editor{padding-top:16px}
+.editor .hint{font-family:var(--mono); font-size:12px; color:var(--dim); margin-bottom:14px; line-height:1.6}
+.editor textarea{width:100%; min-height:55vh; background:#0a0a0a; border:1px solid var(--line); border-radius:10px; padding:16px 18px; outline:none; resize:vertical; font-family:var(--serif); font-size:19px; line-height:1.6; color:var(--ink)}
+.editor textarea:focus{border-color:#444}
+.editor .foot{display:flex; gap:16px; justify-content:flex-end; align-items:center; margin-top:12px}
+.btn{font-family:var(--mono); font-size:13px; border:1px solid var(--rule); border-radius:999px; padding:7px 18px; white-space:nowrap}
+.btn:hover{background:var(--ink); color:#000}
+.btn:disabled{opacity:.4; cursor:default}
+
+details.hist{margin-top:16px; font-family:var(--mono); font-size:12px; color:var(--dim)}
 details.hist summary{cursor:pointer; width:max-content}
-details.hist ol{list-style:none; padding:0; margin:12px 0 0}
-details.hist li{display:flex; gap:12px; align-items:center; padding:6px 0; border-top:1px solid var(--line); flex-wrap:wrap}
+details.hist ol{list-style:none; padding:0; margin:10px 0 0}
+details.hist li{display:flex; gap:14px; padding:7px 0; border-bottom:1px solid var(--line); flex-wrap:wrap}
 
 /* ---------- dialogs ---------- */
-dialog{border:1px solid var(--line2); border-radius:16px; padding:0; background:var(--panel); color:var(--ink); width:min(420px,calc(100vw - 32px)); box-shadow:0 30px 80px rgba(0,0,0,.6)}
-dialog::backdrop{background:rgba(0,0,0,.7); backdrop-filter:blur(3px)}
-.dlg{padding:24px}
-.dlg h2{font-weight:700; font-stretch:115%; font-size:24px; letter-spacing:-.02em; margin:0 0 6px; text-transform:lowercase}
-.dlg p{font-size:15px; margin:4px 0 14px; line-height:1.5; color:#cfcbc3}
+dialog{border:1px solid #333; border-radius:14px; padding:0; background:#0b0b0b; color:var(--ink); width:min(420px,calc(100vw - 32px)); box-shadow:0 30px 80px rgba(0,0,0,.8)}
+dialog::backdrop{background:rgba(0,0,0,.75)}
+.dlg{padding:22px 24px}
+.dlg h2{font-family:var(--mono); font-weight:400; font-size:14px; color:var(--dim); margin:0 0 14px; padding-bottom:10px; border-bottom:1px solid var(--rule)}
+.dlg p{font-size:16px; margin:0 0 12px; line-height:1.5; color:var(--text)}
 .dlg small{display:block; font-family:var(--mono); font-size:11px; color:var(--dim); line-height:1.5}
-.dlg code{font-family:var(--mono); font-size:11px; background:var(--bg); padding:1px 5px; border-radius:4px}
-.dlg label{display:flex; gap:8px; align-items:center; font-family:var(--mono); font-size:11px; letter-spacing:.04em; color:var(--dim); margin:14px 0 6px}
-.dlg input{width:100%; font-family:var(--mono); font-size:15px; padding:10px 12px; border:1px solid var(--line2); border-radius:10px; background:var(--bg); color:var(--ink); outline:none}
-.dlg input:focus{border-color:var(--accent)}
-.dlg .foot{display:flex; justify-content:flex-end; gap:8px; margin-top:20px}
+.dlg label{display:flex; gap:8px; align-items:center; font-family:var(--mono); font-size:11px; color:var(--dim); margin:14px 0 6px}
+.dlg input,.dlg select{width:100%; font-family:var(--mono); font-size:15px; padding:10px 12px; border:1px solid #333; border-radius:8px; background:#000; color:var(--ink); outline:none; color-scheme:dark}
+.dlg input:focus,.dlg select:focus{border-color:var(--ink)}
+.dlg .foot{display:flex; justify-content:flex-end; align-items:center; gap:16px; margin-top:22px}
+.dlg .foot .del{margin-right:auto; color:var(--c-red)}
 .dlg .err{color:var(--c-red); font-family:var(--mono); font-size:12px; min-height:16px; margin-top:8px}
 
-.toast{position:fixed; left:50%; bottom:22px; transform:translate(-50%,20px); opacity:0; transition:.25s; background:var(--ink); color:var(--bg); font-family:var(--mono); font-size:13px; padding:9px 16px; border-radius:999px; z-index:200; pointer-events:none}
+.toast{position:fixed; left:50%; bottom:22px; transform:translate(-50%,20px); opacity:0; transition:.25s; background:var(--ink); color:#000; font-family:var(--mono); font-size:13px; padding:9px 16px; border-radius:999px; z-index:200; pointer-events:none}
 .toast.show{opacity:1; transform:translate(-50%,0)}
 
-@media (max-width:640px){
-  .wrap{padding:14px 14px 70px}
-  .hero{height:180px}
+@media (max-width:900px){
+  .grid{grid-template-columns:1fr; gap:0}
+  aside{position:static; order:-1}
+}
+@media (max-width:600px){
+  .wrap{padding:14px 16px 80px}
+  .hero{height:190px}
   .hero .txt{padding:16px 18px}
-  .doc{padding:6px 18px}
-  .editor{padding:16px 16px}
-  .para{grid-template-columns:1fr; gap:6px; padding:14px 0}
-  .stamp{flex-direction:row; align-items:center; gap:10px; padding:0}
+  .grid{margin-top:26px}
+  .ev{grid-template-columns:86px 1fr auto; gap:10px}
+  .ev .d{font-size:13px} .ev .t{font-size:17px}
+  .para{grid-template-columns:1fr; gap:6px}
+  .stamp{flex-direction:row; gap:10px; align-items:baseline; padding:0}
+  .stamp .d{font-size:12px}
   .para .text{font-size:17px; padding-left:14px}
+  .task{gap:10px} .task .tag{width:auto}
+  .task .tt{font-size:17px}
+  .lhead h3{font-size:20px}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="hero" aria-label="one-eyed starfish">
-    <div class="fade"><div class="halftone"></div></div>
+    <svg class="tex" viewBox="0 0 900 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <filter id="liquid" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.0028 0.006" numOctaves="4" seed="41" result="n"/>
+        <feTurbulence type="turbulence" baseFrequency="0.012" numOctaves="2" seed="5" result="w"/>
+        <feDisplacementMap in="n" in2="w" scale="60" xChannelSelector="R" yChannelSelector="G" result="d"/>
+        <feColorMatrix in="d" type="matrix" values="3.4 0 0 0 -1.3  3.4 0 0 0 -1.3  3.4 0 0 0 -1.3  0 0 0 0 1"/>
+        <feComponentTransfer>
+          <feFuncR type="table" tableValues="0 0.01 0.07 0.42 0.92 1 1"/>
+          <feFuncG type="table" tableValues="0 0.02 0.07 0.04 0.15 0.40 0.66"/>
+          <feFuncB type="table" tableValues="0 0.10 0.58 0.42 0.08 0.03 0.16"/>
+        </feComponentTransfer>
+      </filter>
+      <rect width="900" height="260" filter="url(#liquid)"/>
+    </svg>
+    <div class="shade"></div><div class="grain"></div>
     <div class="txt">
-      <div class="meta">working document — <span id="lastline">loading…</span></div>
+      <div class="meta" id="lastline">loading…</div>
       <div>
         <h1>one-eyed starfish</h1>
-        <div class="legend"><span class="red">bárbara</span><span class="purple">mileu</span><span class="green">jonathan</span></div>
+        <div class="legend"><span class="tag red">bárbara</span><span class="tag purple">mileu</span><span class="tag green">jonathan</span></div>
       </div>
     </div>
   </header>
@@ -135,11 +191,15 @@ dialog::backdrop{background:rgba(0,0,0,.7); backdrop-filter:blur(3px)}
     <span class="status busy" id="status"><i></i><span>loading…</span></span>
     <span class="spacer"></span>
     <span id="who"></span>
-    <button class="btn go" id="editbtn">✎ edit</button>
   </div>
 
-  <main id="main"></main>
-  <details class="hist" id="hist"><summary>edit history</summary><ol id="histlist"></ol></details>
+  <div class="grid" id="page">
+    <main>
+      <section id="todos"></section>
+      <section id="info"></section>
+    </main>
+    <aside><section id="events"></section></aside>
+  </div>
 </div>
 <dialog id="dlg"><div class="dlg" id="dlgbody"></div></dialog>
 <div class="toast" id="toast"></div>
@@ -147,7 +207,7 @@ dialog::backdrop{background:rgba(0,0,0,.7); backdrop-filter:blur(3px)}
 <script>
 /* ================= config ================= */
 const CFG = { owner:'mileuu', repo:'one-eyed-starfish', branch:'data', doc:'doc.json', keys:'keys.json' };
-const MEMBERS = { purple:{ name:'Mileu' }, red:{ name:'Bárbara' }, green:{ name:'Jonathan' } };
+const MEMBERS = { red:{ name:'Bárbara' }, purple:{ name:'Mileu' }, green:{ name:'Jonathan' } };
 const LOCAL = new URLSearchParams(location.search).has('local') || location.protocol === 'file:';
 const LS = {
   get(k,d){ try{ const v = localStorage.getItem('oes2.'+k); return v===null ? d : JSON.parse(v) }catch{ return d } },
@@ -159,20 +219,25 @@ const LS = {
 const S = {
   doc:null, sha:null,
   session: LS.get('session', null),   // { member, token }
-  editing:null,                       // { baseBlocks, baseSha }
+  editing:null,                       // info editor: { baseBlocks, baseSha }
+  showPast:false,
+  refocus:null,
 };
 const $ = id => document.getElementById(id);
 
-/* ================= little helpers ================= */
+/* ================= helpers ================= */
 const pad = n => String(n).padStart(2,'0');
 const fmtDate = iso => { const d = new Date(iso); return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}` };
 const fmtTime = iso => { const d = new Date(iso); return `${pad(d.getHours())}:${pad(d.getMinutes())}` };
+const dmy = ymd => ymd ? ymd.split('-').reverse().join('.') : 'xx.xx.xxxx';
+const todayYMD = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}` };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const linkify = s => esc(s).replace(/(https?:\/\/[^\s<]+[^\s<.,;:!?)\]'"])/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
-const tag = m => `<span class="tag ${m}">${MEMBERS[m]?.name || '?'}</span>`;
+const tag = m => `<span class="tag ${m}">${m === 'all' ? 'all' : (MEMBERS[m]?.name || '?').toLowerCase()}</span>`;
 function setStatus(k,t){ $('status').className = 'status '+k; $('status').lastChild.textContent = t }
 let tt; function toast(m){ const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(()=>t.classList.remove('show'), 2600) }
+const normalizeDoc = d => { d = d || {}; d.version = 3; d.blocks ||= []; d.log ||= []; d.todos ||= []; d.events ||= []; return d };
 
 /* ================= storage: GitHub (or localStorage with ?local) ================= */
 const b64enc = s => { const b = new TextEncoder().encode(s); let bin=''; for (let i=0;i<b.length;i+=0x8000) bin += String.fromCharCode.apply(null, b.subarray(i,i+0x8000)); return btoa(bin) };
@@ -186,7 +251,6 @@ async function readFile(path, token){
   if (r.ok){ const j = await r.json(); return { data:JSON.parse(b64dec(j.content)), sha:j.sha } }
   if (r.status === 404) return { data:null, sha:null };
   if (r.status === 401) throw Object.assign(new Error('GitHub key no longer works'), { badToken:true });
-  // unauthenticated rate limit → raw file fallback (read only)
   r = await fetch(`https://raw.githubusercontent.com/${CFG.owner}/${CFG.repo}/${CFG.branch}/${path}?t=${Date.now()}`, { cache:'no-store' });
   if (r.status === 404) return { data:null, sha:null };
   if (!r.ok) throw new Error('could not load ('+r.status+')');
@@ -209,7 +273,37 @@ async function writeFile(path, data, sha, message, token){
   return (await r.json()).content.sha;
 }
 
-/* ================= passkeys: GitHub key encrypted once per member ================= */
+/* Every change = "apply this function to the latest version and save", retried on conflicts,
+   so two people changing things at the same time never overwrite each other. */
+let queue = Promise.resolve();
+function commit(fn, what){
+  if (!S.session) return askPass(() => commit(fn, what));
+  const me = S.session.member, at = new Date().toISOString();
+  const wrapped = d => { fn(d); d.log = [{ by:me, at, what }, ...d.log].slice(0, 300) };
+  try{ wrapped(S.doc) }catch{}                         // optimistic
+  renderAll(); setStatus('busy','saving…');
+  queue = queue.then(async () => {
+    for (let attempt = 0; attempt < 6; attempt++){
+      try{
+        const latest = await readFile(CFG.doc, S.session.token);
+        const doc = normalizeDoc(latest.data);
+        wrapped(doc);
+        const sha = await writeFile(CFG.doc, doc, latest.sha, `${MEMBERS[me].name}: ${what}`, S.session.token);
+        S.doc = doc; S.sha = sha; renderAll(); setStatus('ok','saved');
+        return true;
+      }catch(e){
+        if (e.conflict){ await new Promise(r => setTimeout(r, 300 + Math.random()*700)); continue }
+        console.error(e); setStatus('err', e.message); toast(e.message);
+        if (e.badToken){ lock(true); askPass() }
+        await refresh(true); return false;
+      }
+    }
+    setStatus('err','could not save'); toast('could not save — try again'); await refresh(true); return false;
+  });
+  return queue;
+}
+
+/* ================= passkeys ================= */
 const te = new TextEncoder();
 const normPass = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').trim().toLowerCase();
 const toB64 = u8 => btoa(String.fromCharCode(...u8));
@@ -224,18 +318,12 @@ async function seal(token, pass){
   return { salt:toB64(salt), iv:toB64(iv), ct:toB64(ct) };
 }
 async function unseal(box, pass){
-  try{
-    const pt = await crypto.subtle.decrypt({ name:'AES-GCM', iv:fromB64(box.iv) }, await deriveKey(pass, fromB64(box.salt)), fromB64(box.ct));
-    return new TextDecoder().decode(pt);
-  }catch{ return null }
+  try{ return new TextDecoder().decode(await crypto.subtle.decrypt({ name:'AES-GCM', iv:fromB64(box.iv) }, await deriveKey(pass, fromB64(box.salt)), fromB64(box.ct))) }
+  catch{ return null }
 }
 
-/* ================= document model =================
-   doc = { version:2, blocks:[{ id, text, by, at }], log:[{ by, at, added, removed }] }
-   Each paragraph (separated by an empty line) is a block carrying who last wrote it and when. */
-const emptyDoc = () => ({ version:2, blocks:[], log:[] });
+/* ================= info document (paragraph diff) ================= */
 const splitParas = text => text.replace(/\r/g,'').split(/\n[ \t]*\n+/).map(s => s.replace(/^\n+|\s+$/g,'')).filter(s => s.trim());
-
 function lcsPairs(a, b){
   const n = a.length, m = b.length, dp = Array.from({ length:n+1 }, () => new Uint16Array(m+1));
   for (let i=n-1;i>=0;i--) for (let j=m-1;j>=0;j--) dp[i][j] = a[i]===b[j] ? dp[i+1][j+1]+1 : Math.max(dp[i+1][j], dp[i][j+1]);
@@ -243,130 +331,156 @@ function lcsPairs(a, b){
   while (i<n && j<m){ if (a[i]===b[j]){ pairs.push([i,j]); i++; j++ } else if (dp[i+1][j] >= dp[i][j+1]) i++; else j++ }
   return pairs;
 }
-/* Diff my edit against what I started from → a list of keep/insert steps + deletions,
-   which can be replayed on the latest version (so simultaneous edits don't clobber each other). */
 function diff(baseBlocks, newText){
   const paras = splitParas(newText), pairs = lcsPairs(baseBlocks.map(b=>b.text), paras);
   const keptBase = new Map(pairs.map(([i,j]) => [j,i]));
   const steps = paras.map((t,j) => keptBase.has(j) ? { keep: baseBlocks[keptBase.get(j)].id } : { ins:t });
   const keptIds = new Set(pairs.map(([i]) => baseBlocks[i].id));
-  const deleted = baseBlocks.filter(b => !keptIds.has(b.id)).map(b => b.id);
-  return { steps, deleted, added: steps.filter(s=>s.ins).length };
+  return { steps, deleted: baseBlocks.filter(b => !keptIds.has(b.id)).map(b => b.id), added: steps.filter(s=>s.ins).length };
 }
-function applyDiff(doc, { steps, deleted, added }, member, at){
-  const del = new Set(deleted);
-  const blocks = doc.blocks.filter(b => !del.has(b.id));
+function applyDiff(doc, { steps, deleted }, member, at){
+  const del = new Set(deleted), blocks = doc.blocks.filter(b => !del.has(b.id));
   let pos = -1;
   for (const s of steps){
     if (s.keep){ const i = blocks.findIndex(b => b.id === s.keep); if (i >= 0) pos = i }
-    else { blocks.splice(++pos, 0, { id:uid(), text:s.ins, by:member, at }) }
+    else blocks.splice(++pos, 0, { id:uid(), text:s.ins, by:member, at });
   }
   doc.blocks = blocks;
-  doc.log = [{ by:member, at, added, removed:deleted.length }, ...(doc.log || [])].slice(0, 300);
-  return doc;
 }
 
 /* ================= render ================= */
-function render(){
-  const doc = S.doc || emptyDoc();
+function renderAll(){
+  const doc = S.doc || normalizeDoc();
   const me = S.session?.member;
-  $('who').innerHTML = me ? `editing as ${tag(me)} <button class="btn plain" id="lockbtn">lock</button>` : '';
-  $('editbtn').style.display = S.editing ? 'none' : '';
+  document.body.classList.toggle('ro', !me);
+  $('who').innerHTML = me
+    ? `editing as ${tag(me)} &nbsp;<button class="link" id="lockbtn">lock</button>`
+    : `<button class="link" id="unlockbtn">unlock to edit</button>`;
+  $('lockbtn')?.addEventListener('click', () => lock());
+  $('unlockbtn')?.addEventListener('click', () => askPass());
   const last = doc.log?.[0];
-  $('lastline').textContent = last ? `last edit ${fmtDate(last.at)} ${fmtTime(last.at)} by ${MEMBERS[last.by]?.name.toLowerCase()}` : 'blank page';
+  $('lastline').textContent = last ? `last change ${fmtDate(last.at)} ${fmtTime(last.at)} · ${MEMBERS[last.by]?.name.toLowerCase()}` : 'working document';
+  renderEvents(doc); renderTodos(doc); renderInfo(doc);
+  if (S.refocus){ const el = document.querySelector(S.refocus); el?.focus(); S.refocus = null }
+}
 
+function renderEvents(doc){
+  const today = todayYMD();
+  const evs = [...doc.events].sort((a,b) => (a.date||'9').localeCompare(b.date||'9'));
+  const upcoming = evs.filter(e => !e.date || e.date >= today), past = evs.filter(e => e.date && e.date < today).reverse();
+  const row = e => `<div class="ev ${e.date===today?'today':''} ${e.date && e.date<today?'past':''}" data-ev="${e.id}">
+      <span class="d">${dmy(e.date)}</span>
+      <span class="t">${esc(e.title)}${e.place ? `, <span>${esc(e.place)}</span>` : ''}</span>
+      <span class="acts"><button data-act="ev-edit">edit</button></span></div>`;
+  $('events').innerHTML = `<div class="shead"><h2>_upcoming</h2><span class="spacer"></span><button class="link addbtn" data-act="ev-new">+ add</button></div>
+    ${upcoming.map(row).join('') || '<div class="empty">nothing planned yet</div>'}
+    ${past.length ? `<details class="hist" ${S.showPast?'open':''} id="pastbox"><summary>past (${past.length})</summary>${past.map(row).join('')}</details>` : ''}`;
+  $('pastbox')?.addEventListener('toggle', e => S.showPast = e.target.open);
+}
+
+function renderTodos(doc){
+  const today = todayYMD(), me = S.session?.member;
+  const lists = [...doc.todos].sort((a,b) => {
+    const da = a.items.length && a.items.every(i=>i.done), db = b.items.length && b.items.every(i=>i.done);
+    return (da - db) || (a.until||'9').localeCompare(b.until||'9');
+  });
+  $('todos').innerHTML = `<div class="shead"><h2>_to-do</h2><span class="spacer"></span><button class="link addbtn" data-act="list-new">+ new list</button></div>
+    ${lists.map(l => {
+      const done = l.items.filter(i=>i.done).length, late = l.until && l.until < today && done < l.items.length;
+      return `<div class="list" data-list="${l.id}">
+        <div class="lhead"><h3>${esc(l.title)}</h3>
+          <span class="until ${late?'late':''}">${l.until ? 'until '+dmy(l.until) : 'no deadline'}</span>
+          <span class="count">${done}/${l.items.length}</span>
+          <span class="acts"><button data-act="list-edit">edit list</button></span></div>
+        ${l.items.map(i => `<div class="task ${i.done?'done':''}" data-item="${i.id}">
+          <input type="checkbox" class="check" data-act="item-toggle" ${i.done?'checked':''} aria-label="done">
+          ${tag(i.who||'all')}<span class="tt">${linkify(i.text)}</span>
+          <span class="acts"><button data-act="item-edit">edit</button></span></div>`).join('')}
+        <form class="addrow" data-list="${l.id}">
+          <select name="who" aria-label="who does it">${['all','red','purple','green'].map(k => `<option value="${k}" ${k===(me||'all')?'selected':''}>${k==='all'?'all':MEMBERS[k].name.toLowerCase()}</option>`).join('')}</select>
+          <input name="text" placeholder="add a task…" autocomplete="off" data-addinput="${l.id}">
+          <button>add</button></form>
+      </div>`;
+    }).join('') || '<div class="empty">no lists yet</div>'}`;
+}
+
+function renderInfo(doc){
+  const me = S.session?.member;
   if (S.editing){
-    if (!$('ed')){
-      $('main').innerHTML = `<div class="doc editor">
-        <div class="hint">writing as ${tag(me)} · leave an <b>empty line</b> between paragraphs · every paragraph you add or change gets today's date and your colour</div>
+    if ($('ed')) return;
+    $('info').innerHTML = `<div class="shead"><h2>_info</h2></div>
+      <div class="editor">
+        <div class="hint">writing as ${tag(me)} — leave an empty line between paragraphs. every paragraph you add or change gets today's date and your colour.</div>
         <textarea id="ed" spellcheck="true" placeholder="start writing…"></textarea>
-        <div class="foot"><button class="btn plain" id="cancelbtn">cancel</button><button class="btn go" id="savebtn">save</button></div></div>`;
-      const ta = $('ed');
-      ta.value = S.editing.baseBlocks.map(b => b.text).join('\n\n');
-      ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
-      ta.addEventListener('keydown', e => { if (e.key==='Enter' && (e.metaKey||e.ctrlKey)) saveEdit(); if (e.key==='Escape') cancelEdit() });
-      $('cancelbtn').onclick = cancelEdit; $('savebtn').onclick = saveEdit;
-    }
-  } else {
-    const newest = doc.blocks.reduce((m,b) => b.at > m ? b.at : m, '');
-    $('main').innerHTML = `<article class="doc">${doc.blocks.length ? doc.blocks.map(b => `
-      <section class="para ${b.by} ${b.at===newest ? 'fresh' : ''}">
-        <div class="stamp"><span class="d">${fmtDate(b.at)}</span><span class="t">${fmtTime(b.at)}</span>${tag(b.by)}</div>
-        <div class="text">${linkify(b.text)}</div>
-      </section>`).join('') : `<div class="empty">nothing written yet — press <b>✎ edit</b> to start</div>`}</article>`;
+        <div class="foot"><button class="link" id="cancelbtn">cancel</button><button class="btn" id="savebtn">save</button></div></div>`;
+    const ta = $('ed');
+    ta.value = S.editing.baseBlocks.map(b => b.text).join('\n\n');
+    ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
+    ta.addEventListener('keydown', e => { if (e.key==='Enter' && (e.metaKey||e.ctrlKey)) saveEdit(); if (e.key==='Escape') cancelEdit() });
+    $('cancelbtn').onclick = cancelEdit; $('savebtn').onclick = saveEdit;
+    return;
   }
-  $('histlist').innerHTML = (doc.log || []).slice(0, 60).map(l =>
-    `<li><span>${fmtDate(l.at)} ${fmtTime(l.at)}</span>${tag(l.by)}<span>+${l.added} / −${l.removed} paragraphs</span></li>`).join('') || '<li>no edits yet</li>';
-  $('hist').style.display = doc.log?.length ? '' : 'none';
-  $('lockbtn')?.addEventListener('click', lock);
+  const newest = doc.blocks.reduce((m,b) => b.at > m ? b.at : m, '');
+  const hist = doc.log.slice(0, 50);
+  $('info').innerHTML = `<div class="shead"><h2>_info</h2><span class="spacer"></span><button class="link" data-act="info-edit">edit</button></div>
+    ${doc.blocks.map(b => `<div class="para ${b.by} ${b.at===newest?'fresh':''}">
+        <div class="stamp"><span class="d">${fmtDate(b.at)}</span><span>${fmtTime(b.at)}</span>${tag(b.by)}</div>
+        <div class="text">${linkify(b.text)}</div></div>`).join('') || '<div class="empty">nothing written yet</div>'}
+    ${hist.length ? `<details class="hist"><summary>change history</summary><ol>${hist.map(l =>
+      `<li><span>${fmtDate(l.at)} ${fmtTime(l.at)}</span>${tag(l.by)}<span>${esc(l.what || `info +${l.added} / −${l.removed}`)}</span></li>`).join('')}</ol></details>` : ''}`;
 }
 
 /* ================= load / refresh ================= */
 async function refresh(force){
-  if (!force && (document.hidden || S.editing)) return;
+  if (!force && (document.hidden || S.editing || dlg.open)) return;
+  if (!force && document.activeElement?.matches('input,textarea,select')) return;   // don't disturb typing
   try{
     const { data, sha } = await readFile(CFG.doc, S.session?.token);
-    if (force || sha !== S.sha){ S.doc = data || emptyDoc(); S.sha = sha; render() }
+    if (force || sha !== S.sha){ S.doc = normalizeDoc(data); S.sha = sha; renderAll() }
     setStatus('ok', S.session ? 'up to date' : 'read only');
   }catch(e){
     console.error(e); setStatus('err', e.message);
-    if (e.badToken){ lock(); toast('Saved key stopped working — enter your passkey again') }
-    if (!S.doc){ S.doc = emptyDoc(); render() }
+    if (e.badToken){ lock(); toast('saved key stopped working — unlock again') }
+    if (!S.doc){ S.doc = normalizeDoc(); renderAll() }
   }
 }
 
-/* ================= edit flow ================= */
-$('editbtn').onclick = () => S.session ? startEdit() : askPass();
-
+/* ================= info edit flow ================= */
 async function startEdit(){
+  if (!S.session) return askPass(startEdit);
   setStatus('busy','opening…');
   await refresh(true);
   S.editing = { baseBlocks: structuredClone(S.doc.blocks), baseSha:S.sha };
-  render(); setStatus('ok','editing');
+  renderAll(); setStatus('ok','editing');
 }
+function edText(){ return S.editing.baseBlocks.map(b=>b.text).join('\n\n') }
 function cancelEdit(){
-  const ta = $('ed');
-  const changed = ta && ta.value !== S.editing.baseBlocks.map(b=>b.text).join('\n\n');
-  if (changed && !confirm('Throw away your changes?')) return;
-  S.editing = null; $('main').innerHTML = ''; render(); refresh(true);
+  if ($('ed') && $('ed').value !== edText() && !confirm('Throw away your changes?')) return;
+  S.editing = null; renderAll(); refresh(true);
 }
 async function saveEdit(){
-  const text = $('ed').value;
-  const d = diff(S.editing.baseBlocks, text);
-  if (!d.added && !d.deleted.length){ S.editing = null; $('main').innerHTML=''; render(); return toast('nothing changed') }
+  const d = diff(S.editing.baseBlocks, $('ed').value);
+  if (!d.added && !d.deleted.length){ S.editing = null; renderAll(); return toast('nothing changed') }
   const me = S.session.member, at = new Date().toISOString();
-  $('savebtn').disabled = true; setStatus('busy','saving…');
-  for (let attempt = 0; attempt < 6; attempt++){
-    try{
-      const latest = await readFile(CFG.doc, S.session.token);
-      const doc = applyDiff(latest.data || emptyDoc(), d, me, at);
-      const sha = await writeFile(CFG.doc, doc, latest.sha, `${MEMBERS[me].name}: +${d.added} −${d.deleted.length}`, S.session.token);
-      if (latest.sha && latest.sha !== S.editing.baseSha) toast('someone else edited too — both versions were merged');
-      else toast('saved');
-      S.doc = doc; S.sha = sha; S.editing = null; $('main').innerHTML = ''; render(); setStatus('ok','saved');
-      return;
-    }catch(e){
-      if (e.conflict){ await new Promise(r => setTimeout(r, 300 + Math.random()*700)); continue }
-      console.error(e); setStatus('err', e.message); toast(e.message); $('savebtn').disabled = false;
-      if (e.badToken){ lock(true); askPass() }
-      return;
-    }
-  }
-  setStatus('err','could not save'); toast('could not save — try again'); $('savebtn').disabled = false;
+  $('savebtn').disabled = true;
+  const merged = S.sha && S.sha !== S.editing.baseSha;
+  S.editing = null;
+  const ok = await commit(doc => applyDiff(doc, d, me, at), `info +${d.added} / −${d.deleted.length} paragraphs`);
+  if (ok) toast(merged ? 'saved — merged with someone else’s edit' : 'saved');
 }
-function lock(keepEditing){ S.session = null; LS.del('session'); if (!keepEditing){ S.editing = null; $('main').innerHTML = '' } render(); setStatus('ok','read only') }
+function lock(keepEditing){ S.session = null; LS.del('session'); if (!keepEditing) S.editing = null; renderAll(); setStatus('ok','read only') }
 
 /* ================= dialogs ================= */
 const dlg = $('dlg');
 function openDialog(html, mount){ $('dlgbody').innerHTML = html; dlg.showModal(); mount?.() }
 dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close() });
 
-function askPass(){
-  openDialog(`<form id="pf"><h2>who's writing?</h2>
-    <p>Type your passkey. It decides which name &amp; colour your edits get.</p>
+function askPass(then){
+  openDialog(`<form id="pf"><h2>_unlock</h2>
+    <p>Type your passkey — it decides which name &amp; colour your changes get.</p>
     <input name="p" type="password" autocomplete="off" autocapitalize="off" placeholder="passkey" required>
     <div class="err" id="perr"></div>
-    <div class="foot"><button type="button" class="btn plain" id="pclose">cancel</button><button class="btn go">unlock</button></div></form>`, () => {
+    <div class="foot"><button type="button" class="link" id="pclose">cancel</button><button class="btn">unlock</button></div></form>`, () => {
     const f = $('pf'); f.p.focus();
     $('pclose').onclick = () => dlg.close();
     f.onsubmit = async e => {
@@ -378,35 +492,31 @@ function askPass(){
         const token = await unseal(box, f.p.value);
         if (token){
           S.session = { member, token }; LS.set('session', S.session);
-          dlg.close(); toast(`hi ${MEMBERS[member].name}`);
-          if (S.editing){ render(); $('savebtn').disabled = false; return }   // keep unsaved text
-          return startEdit();
+          dlg.close(); toast(`hi ${MEMBERS[member].name}`); renderAll(); refresh(true);
+          if (S.editing && $('savebtn')) $('savebtn').disabled = false;
+          then?.(); return;
         }
       }
-      $('perr').textContent = 'wrong passkey';
-      f.p.select();
+      $('perr').textContent = 'wrong passkey'; f.p.select();
     };
   });
 }
 
-/* One-time setup: the GitHub key is encrypted with each person's passkey and stored in keys.json.
-   The passkeys themselves are never stored anywhere. */
 function setup(){
-  openDialog(`<form id="sf"><h2>connect editing</h2>
+  openDialog(`<form id="sf"><h2>_connect editing</h2>
     <p>One time only. Paste a GitHub key that can write to this repo, then set the three passkeys.</p>
-    ${LOCAL ? '<small>local test mode — any text works as the key</small>' : `<small>make it at github.com → settings → developer settings → fine-grained tokens: only repo <code>${CFG.repo}</code>, permission <b>Contents: read &amp; write</b>.</small>`}
+    ${LOCAL ? '<small>local test mode — any text works as the key</small>' : `<small>github.com → settings → developer settings → fine-grained tokens: only repo ${CFG.repo}, Contents: read &amp; write.</small>`}
     <label>github key</label><input name="token" type="password" autocomplete="off" required>
-    <label>passkey for <span class="tag purple">Mileu</span></label><input name="purple" autocomplete="off" required>
-    <label>passkey for <span class="tag red">Bárbara</span></label><input name="red" autocomplete="off" required>
-    <label>passkey for <span class="tag green">Jonathan</span></label><input name="green" autocomplete="off" required>
+    <label>passkey for ${tag('purple')}</label><input name="purple" autocomplete="off" required>
+    <label>passkey for ${tag('red')}</label><input name="red" autocomplete="off" required>
+    <label>passkey for ${tag('green')}</label><input name="green" autocomplete="off" required>
     <div class="err" id="serr"></div>
-    <div class="foot"><button type="button" class="btn plain" id="sclose">cancel</button><button class="btn go">connect</button></div></form>`, () => {
+    <div class="foot"><button type="button" class="link" id="sclose">cancel</button><button class="btn">connect</button></div></form>`, () => {
     const f = $('sf');
     $('sclose').onclick = () => dlg.close();
     f.onsubmit = async e => {
       e.preventDefault();
-      const ps = ['purple','red','green'].map(m => normPass(f[m].value));
-      if (new Set(ps).size < 3){ $('serr').textContent = 'the three passkeys must be different'; return }
+      if (new Set(['purple','red','green'].map(m => normPass(f[m].value))).size < 3){ $('serr').textContent = 'the three passkeys must be different'; return }
       $('serr').textContent = 'encrypting…';
       try{
         const token = f.token.value.trim(), members = {};
@@ -419,13 +529,88 @@ function setup(){
   });
 }
 
+/* generic small form dialog */
+function formDialog({ title, fields, submit='save', onSubmit, onDelete }){
+  const field = f => f.type === 'select'
+    ? `<label>${f.label}</label><select name="${f.name}">${f.options.map(([v,t]) => `<option value="${v}" ${v===f.value?'selected':''}>${t}</option>`).join('')}</select>`
+    : `<label>${f.label}</label><input name="${f.name}" type="${f.type||'text'}" value="${esc(f.value||'')}" ${f.required?'required':''} autocomplete="off" ${f.placeholder?`placeholder="${esc(f.placeholder)}"`:''}>`;
+  openDialog(`<form id="ff"><h2>${title}</h2>${fields.map(field).join('')}
+    <div class="foot">${onDelete ? '<button type="button" class="link del" id="fdel">delete</button>' : ''}
+      <button type="button" class="link" id="fclose">cancel</button><button class="btn">${submit}</button></div></form>`, () => {
+    const f = $('ff');
+    f.querySelector('input,select')?.focus();
+    $('fclose').onclick = () => dlg.close();
+    $('fdel')?.addEventListener('click', () => { if (confirm('Delete this?')){ dlg.close(); onDelete() } });
+    f.onsubmit = e => { e.preventDefault(); const v = Object.fromEntries(new FormData(f)); for (const k in v) v[k] = v[k].trim(); dlg.close(); onSubmit(v) };
+  });
+}
+const whoOptions = [['all','all'], ['red','bárbara'], ['purple','mileu'], ['green','jonathan']];
+
+/* ================= events / to-do actions ================= */
+function eventDialog(ev){
+  formDialog({ title: ev ? '_edit event' : '_new event',
+    fields:[ { name:'date', label:'date', type:'date', value:ev?.date || todayYMD(), required:true },
+             { name:'title', label:'what', value:ev?.title, required:true, placeholder:'concert, rehearsal…' },
+             { name:'place', label:'where (optional)', value:ev?.place, placeholder:'place / city' } ],
+    onSubmit: v => ev
+      ? commit(d => { const x = d.events.find(x => x.id===ev.id); if (x) Object.assign(x, v) }, `event "${v.title}" edited`)
+      : (() => { const ne = { id:uid(), ...v, by:S.session?.member }; commit(d => { if (!d.events.some(x=>x.id===ne.id)) d.events.push(ne) }, `event "${v.title}" added`) })(),
+    onDelete: ev && (() => commit(d => { d.events = d.events.filter(x => x.id!==ev.id) }, `event "${ev.title}" deleted`)),
+  });
+}
+function listDialog(list){
+  formDialog({ title: list ? '_edit list' : '_new to-do list',
+    fields:[ { name:'title', label:'list name', value:list?.title, required:true, placeholder:'e.g. december concert' },
+             { name:'until', label:'until (optional)', type:'date', value:list?.until } ],
+    submit: list ? 'save' : 'create',
+    onSubmit: v => list
+      ? commit(d => { const x = d.todos.find(x => x.id===list.id); if (x) Object.assign(x, v) }, `list "${v.title}" edited`)
+      : (() => { const nl = { id:uid(), ...v, items:[], by:S.session?.member }; S.refocus = `[data-addinput="${nl.id}"]`; commit(d => { if (!d.todos.some(x=>x.id===nl.id)) d.todos.push(nl) }, `list "${v.title}" created`) })(),
+    onDelete: list && (() => commit(d => { d.todos = d.todos.filter(x => x.id!==list.id) }, `list "${list.title}" deleted`)),
+  });
+}
+const findItem = (d, lid, iid) => d.todos.find(l => l.id===lid)?.items.find(i => i.id===iid);
+
+document.addEventListener('click', ev => {
+  const b = ev.target.closest('[data-act]'); if (!b) return;
+  const act = b.dataset.act, doc = S.doc;
+  const needs = fn => S.session ? fn() : askPass(fn);
+  const lid = b.closest('[data-list]')?.dataset.list, iid = b.closest('[data-item]')?.dataset.item, eid = b.closest('[data-ev]')?.dataset.ev;
+  if (act === 'info-edit') return startEdit();
+  if (act === 'ev-new') return needs(() => eventDialog());
+  if (act === 'ev-edit') return needs(() => eventDialog(doc.events.find(e => e.id===eid)));
+  if (act === 'list-new') return needs(() => listDialog());
+  if (act === 'list-edit') return needs(() => listDialog(doc.todos.find(l => l.id===lid)));
+  if (act === 'item-toggle'){
+    if (!S.session){ ev.preventDefault(); return askPass() }
+    const v = b.checked, it = findItem(doc, lid, iid);
+    return commit(d => { const x = findItem(d, lid, iid); if (x){ x.done = v; x.doneAt = v ? new Date().toISOString() : null } }, `${v?'done':'reopened'}: "${it?.text}"`);
+  }
+  if (act === 'item-edit'){
+    const it = findItem(doc, lid, iid);
+    return formDialog({ title:'_edit task', fields:[ { name:'who', label:'who does it', type:'select', value:it.who||'all', options:whoOptions }, { name:'text', label:'task', value:it.text, required:true } ],
+      onSubmit: v => commit(d => { const x = findItem(d, lid, iid); if (x) Object.assign(x, v) }, `task edited: "${v.text}"`),
+      onDelete: () => commit(d => { const l = d.todos.find(l=>l.id===lid); if (l) l.items = l.items.filter(i => i.id!==iid) }, `task deleted: "${it.text}"`) });
+  }
+});
+document.addEventListener('submit', ev => {
+  const f = ev.target.closest('form.addrow'); if (!f) return;
+  ev.preventDefault();
+  const text = f.text.value.trim(), who = f.who.value, lid = f.dataset.list; if (!text) return;
+  const add = () => {
+    const item = { id:uid(), text, who, done:false, by:S.session.member, at:new Date().toISOString() };
+    S.refocus = `[data-addinput="${lid}"]`;
+    commit(d => { const l = d.todos.find(l => l.id===lid); if (l && !l.items.some(i=>i.id===item.id)) l.items.push(item) }, `task added: "${text}"`);
+  };
+  S.session ? add() : askPass(add);
+});
 
 /* ================= go ================= */
-render();
+renderAll();
 refresh(true);
 setInterval(refresh, 20000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh() });
-window.addEventListener('beforeunload', e => { if (S.editing && $('ed')?.value !== S.editing.baseBlocks.map(b=>b.text).join('\n\n')){ e.preventDefault(); e.returnValue = '' } });
+window.addEventListener('beforeunload', e => { if (S.editing && $('ed') && $('ed').value !== edText()){ e.preventDefault(); e.returnValue = '' } });
 </script>
 </body>
 </html>
