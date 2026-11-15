@@ -1,0 +1,17 @@
+{
+ "version": 1,
+ "boxes": {
+  "token": {
+   "salt": "OtIkUBsOK+a3XfQqdxlhnA==",
+   "iv": "GGhEtM5aLM0gxs9P",
+   "ct": "ifpmyqe7N4yFOQ7OsPTf/2BOCY1NOTsBIk2az+WmZXojV2cA01jOqTASm1B36fbmNSoguQcYL6t504jj"
+  },
+  "purple": {
+   "salt": "w339Kk6FVDkN5N++3qDPxA==",
+   "iv": "bghvag8Wgr42Fj3i",
+   "ct": "YtWUkStRtuekHzXhZyT0Fi8tbjFyJpPQmAvjtCXI0+CatG5yK7i+8clvx1q+O5fDVvjSxzFmvRIJM8m1"
+  }
+ },
+ "iv": "v7fVqYrfIbw9Uari",
+ "ct": "8V4HaVBsTPxoTNz4vhOeL8jB689U+QB3TfZ3ituuMG3/Z0vHfec="
+}
