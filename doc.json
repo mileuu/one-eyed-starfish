@@ -2,12 +2,6 @@
  "version": 3,
  "blocks": [
   {
-   "id": "mwih1cl4iq66q",
-   "text": "Until residency/december",
-   "by": "purple",
-   "at": "2026-11-15T23:34:11.938Z"
-  },
-  {
    "id": "mwihewyp8ly5n",
    "text": "1. where should the performance go? (style type of music, performance, set-up). Figure our unique sound.\n2. how do we want to work? how to create as a collective?\n3. decide a line-up direction and which songs to keep to work further.\n4. individual work on the playing style",
    "by": "purple",
@@ -15,6 +9,11 @@
   }
  ],
  "log": [
+  {
+   "by": "purple",
+   "at": "2026-11-15T23:44:58.028Z",
+   "what": "info +0 / −1 paragraphs"
+  },
   {
    "by": "purple",
    "at": "2026-11-15T23:44:45.001Z",
