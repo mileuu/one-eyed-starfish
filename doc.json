@@ -17,6 +17,11 @@
  "log": [
   {
    "by": "purple",
+   "at": "2026-11-15T23:35:18.992Z",
+   "what": "event \"updates Videocall meeting\" added"
+  },
+  {
+   "by": "purple",
    "at": "2026-11-15T23:34:11.938Z",
    "what": "info +2 / −1 paragraphs"
   },
@@ -68,5 +73,13 @@
    "by": "purple"
   }
  ],
- "events": []
+ "events": [
+  {
+   "id": "mwih2rwwvhnpq",
+   "date": "2026-12-06",
+   "title": "updates Videocall meeting",
+   "place": "telegram",
+   "by": "purple"
+  }
+ ]
 }
