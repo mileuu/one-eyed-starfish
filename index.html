@@ -3,623 +3,441 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>one-eyed starfish · board</title>
+<title>one-eyed starfish</title>
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Righteous&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%AD%90%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono:wght@400;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%231d3fd1'/%3E%3Cpath d='M50 8 61 38 93 38 67 57 77 89 50 70 23 89 33 57 7 38 39 38Z' fill='%23a6ef2b'/%3E%3Ccircle cx='50' cy='52' r='8' fill='%23fff'/%3E%3Ccircle cx='50' cy='52' r='4' fill='%23000'/%3E%3C/svg%3E">
 <style>
 :root{
-  --bg:#060808; --panel:#0d1212; --panel2:#121a19; --line:#1f2b29; --line2:#2c3d3a;
-  --ink:#e4fff4; --dim:#8aa8a0; --faint:#5a716b;
-  --mint:#46f0b0; --teal:#3cd6d2; --mint-ink:#03130d;
-  --red:#ff4f63; --purple:#b46cff; --green:#5cf07c; --any:#8aa8a0;
-  --radius:14px;
-  --mono:"JetBrains Mono",ui-monospace,monospace;
-  --sans:"Space Grotesk",system-ui,sans-serif;
+  --paper:#efeae0; --paper2:#f7f3eb; --ink:#141210; --dim:#6b655b; --faint:#a39c8f; --rule:#d8d1c3;
+  --blue:#1d3fd1; --red:#e5322b; --acid:#a6ef2b; --pink:#ff4fa3; --orange:#ff7a1a;
+  --c-purple:#7b3cff; --c-red:#e5322b; --c-green:#16924a;
+  --mono:"Space Mono",ui-monospace,monospace;
+  --serif:"Newsreader",Georgia,serif;
+  --display:"Syne",system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
-body{
-  background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:15px; line-height:1.5;
-  min-height:100vh; overflow-x:hidden;
+body{background:var(--paper); color:var(--ink); font-family:var(--serif); min-height:100vh; overflow-x:hidden}
+body::before{ /* riso paper grain */
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:100; mix-blend-mode:multiply; opacity:.55;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .4 0 0 0 0 .33 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-body::before{ /* grain + glow */
-  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
-  background:
-    radial-gradient(900px 500px at 85% -10%, rgba(70,240,176,.13), transparent 60%),
-    radial-gradient(700px 500px at -10% 110%, rgba(60,214,210,.10), transparent 60%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 1 0 0 0 0 .7 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-#app{position:relative; z-index:1}
-a{color:var(--mint)}
+a{color:var(--blue)}
 button{font:inherit; color:inherit; cursor:pointer}
-input,textarea,select{font:inherit; color:var(--ink)}
+.wrap{max-width:1040px; margin:0 auto; padding:20px 20px 90px}
 
-/* ---------- header ---------- */
-header.top{
-  display:flex; flex-wrap:wrap; align-items:center; gap:14px 20px;
-  padding:22px 28px 14px; max-width:1500px; margin:0 auto;
+/* ---------- poster hero ---------- */
+.hero{
+  position:relative; border-radius:22px; overflow:hidden; background:var(--blue); color:var(--ink);
+  aspect-ratio:2.6/1; min-height:230px; isolation:isolate;
 }
-.logo{
-  font-family:Righteous,var(--sans); font-size:clamp(28px,4.2vw,46px); letter-spacing:.04em; line-height:1;
-  color:var(--bg); -webkit-text-stroke:1.6px var(--mint); text-transform:uppercase;
-  text-shadow:0 0 18px rgba(70,240,176,.35); margin:0; white-space:nowrap;
-}
-.logo small{display:block; -webkit-text-stroke:0; color:var(--dim); font-family:var(--mono); font-size:11px; letter-spacing:.25em; text-shadow:none; margin-top:6px}
-.spacer{flex:1}
-.status{font-family:var(--mono); font-size:11px; color:var(--dim); display:flex; align-items:center; gap:7px; white-space:nowrap}
-.status i{width:8px; height:8px; border-radius:50%; background:var(--faint); display:inline-block}
-.status.ok i{background:var(--mint); box-shadow:0 0 8px var(--mint)}
-.status.busy i{background:#ffd34f; animation:pulse 1s infinite}
-.status.err i{background:var(--red)}
-@keyframes pulse{50%{opacity:.3}}
-
-.me{display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:11px; color:var(--dim)}
-.dot{width:22px; height:22px; border-radius:50%; border:2px solid transparent; padding:0; background:var(--c); opacity:.35; transition:.15s}
-.dot:hover{opacity:.8}
-.dot.on{opacity:1; border-color:var(--ink); box-shadow:0 0 12px var(--c)}
+.hero .dots{position:absolute; inset:0; background-image:radial-gradient(circle, rgba(0,0,20,.5) 1.6px, transparent 2px); background-size:9px 9px; mask-image:radial-gradient(ellipse 70% 90% at 75% 50%, #000 20%, transparent 75%); -webkit-mask-image:radial-gradient(ellipse 70% 90% at 75% 50%, #000 20%, transparent 75%)}
+.hero .sun{position:absolute; width:34%; aspect-ratio:1; border-radius:50%; background:var(--red); right:-6%; top:-28%; filter:blur(2px); box-shadow:0 0 60px 10px rgba(229,50,43,.55)}
+.hero .blob{position:absolute; width:46%; aspect-ratio:1.4; left:-8%; bottom:-38%; background:var(--pink); border-radius:46% 54% 60% 40%/50% 40% 60% 50%; mix-blend-mode:multiply; opacity:.85}
+.hero svg.star{position:absolute; right:7%; top:50%; transform:translateY(-50%) rotate(-8deg); height:128%; width:auto; overflow:visible}
+.hero .txt{position:absolute; inset:0; padding:20px 24px; display:flex; flex-direction:column; justify-content:space-between; z-index:2}
+.hero .meta{font-family:var(--mono); font-size:11px; line-height:1.35; color:var(--paper2); text-transform:lowercase; letter-spacing:.02em}
+.hero .meta span{background:var(--ink); padding:0 4px}
+.hero h1{font-family:var(--display); font-weight:800; font-size:clamp(34px,7.4vw,84px); line-height:.86; letter-spacing:-.035em; margin:0; color:var(--paper2); text-transform:lowercase; max-width:60%; text-shadow:3px 3px 0 var(--ink)}
+.hero h1 em{font-style:normal; color:var(--acid); -webkit-text-stroke:0}
+.hero .legend{display:flex; gap:6px; flex-wrap:wrap}
+.tag{font-family:var(--mono); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; padding:2px 8px; border-radius:999px; color:#fff; background:var(--c); white-space:nowrap; display:inline-block; line-height:1.5}
+.tag.purple{--c:var(--c-purple)} .tag.red{--c:var(--c-red)} .tag.green{--c:var(--c-green)}
 
 /* ---------- toolbar ---------- */
-.toolbar{
-  display:flex; flex-wrap:wrap; gap:10px; align-items:center;
-  padding:6px 28px 18px; max-width:1500px; margin:0 auto;
-}
-.seg{display:inline-flex; background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:3px}
-.seg button{background:none; border:0; padding:6px 13px; border-radius:999px; font-size:13px; color:var(--dim)}
-.seg button.on{background:var(--mint); color:var(--mint-ink); font-weight:600}
-.search{
-  background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:7px 14px; min-width:0; width:220px; outline:none;
-}
-.search:focus{border-color:var(--mint)}
-.btn{
-  background:var(--panel); border:1px solid var(--line2); border-radius:999px; padding:7px 14px; font-size:13px; white-space:nowrap;
-}
-.btn:hover{border-color:var(--mint)}
-.btn.primary{background:var(--mint); color:var(--mint-ink); border-color:var(--mint); font-weight:700; box-shadow:0 0 20px rgba(70,240,176,.25)}
-.btn.primary:hover{filter:brightness(1.1)}
-.btn.ghost{background:none}
-.whofilter{display:inline-flex; gap:5px; align-items:center}
-.whofilter .dot{width:18px; height:18px}
+.bar{display:flex; align-items:center; gap:10px; margin:18px 4px 14px; flex-wrap:wrap; font-family:var(--mono); font-size:12px; color:var(--dim)}
+.bar .spacer{flex:1}
+.status{display:inline-flex; align-items:center; gap:6px}
+.status i{width:8px; height:8px; border-radius:50%; background:var(--faint)}
+.status.ok i{background:var(--c-green)} .status.busy i{background:var(--orange); animation:p 1s infinite} .status.err i{background:var(--red)}
+@keyframes p{50%{opacity:.3}}
+.btn{font-family:var(--mono); font-size:13px; font-weight:700; border:2px solid var(--ink); background:var(--paper2); border-radius:999px; padding:7px 16px; box-shadow:3px 3px 0 var(--ink); transition:transform .08s, box-shadow .08s; white-space:nowrap}
+.btn:hover{transform:translate(-1px,-1px); box-shadow:4px 4px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px); box-shadow:1px 1px 0 var(--ink)}
+.btn.go{background:var(--acid)}
+.btn.plain{border-color:transparent; box-shadow:none; background:none; color:var(--dim); font-weight:400; padding:7px 8px; text-decoration:underline; text-underline-offset:3px}
+.btn.plain:hover{color:var(--ink); transform:none}
 
-main{padding:0 28px 80px; max-width:1500px; margin:0 auto}
+/* ---------- the document ---------- */
+.doc{background:var(--paper2); border:2px solid var(--ink); border-radius:18px; padding:30px 34px 34px; box-shadow:6px 6px 0 var(--ink); position:relative}
+.para{display:grid; grid-template-columns:132px 1fr; gap:22px; padding:9px 0; border-top:1px dashed var(--rule)}
+.para:first-child{border-top:0}
+.stamp{font-family:var(--mono); font-size:11px; color:var(--dim); padding-top:5px; display:flex; flex-direction:column; align-items:flex-start; gap:4px}
+.stamp .d{color:var(--ink); font-weight:700; letter-spacing:.02em}
+.stamp .t{color:var(--faint)}
+.para .text{font-size:19px; line-height:1.55; white-space:pre-wrap; overflow-wrap:anywhere; border-left:3px solid var(--c); padding-left:16px}
+.para.purple{--c:var(--c-purple)} .para.red{--c:var(--c-red)} .para.green{--c:var(--c-green)}
+.para.fresh .text{background:linear-gradient(90deg, color-mix(in srgb,var(--c) 10%,transparent), transparent 70%)}
+.empty{font-family:var(--mono); color:var(--faint); text-align:center; padding:50px 0; font-size:13px}
 
-/* ---------- cards ---------- */
-.card{
-  --c:var(--any);
-  position:relative; background:linear-gradient(180deg,var(--panel2),var(--panel));
-  border:1px solid var(--line); border-radius:var(--radius); padding:12px 14px 10px 16px;
-  break-inside:avoid; margin-bottom:12px; overflow:hidden;
-  transition:border-color .15s, transform .15s;
-}
-.card::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--c); box-shadow:0 0 12px var(--c)}
-.card:hover{border-color:var(--line2)}
-.card.red{--c:var(--red)} .card.purple{--c:var(--purple)} .card.green{--c:var(--green)}
-.card.pinned{border-color:rgba(70,240,176,.45)}
-.card.done{opacity:.55}
-.card.done h3{text-decoration:line-through}
-.stamp{display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:11px; color:var(--dim); margin-bottom:5px; flex-wrap:wrap}
-.stamp .date{color:var(--ink); background:rgba(255,255,255,.06); border:1px solid var(--line2); padding:1px 7px; border-radius:6px; letter-spacing:.03em}
-.stamp .time{color:var(--faint)}
-.stamp .by{color:var(--c); text-transform:uppercase; letter-spacing:.12em; font-weight:600}
-.stamp .pin{margin-left:auto; color:var(--mint)}
-.card h3{margin:2px 0 3px; font-size:16px; font-weight:600; line-height:1.3; display:flex; gap:8px; align-items:flex-start}
-.card .body{color:#c6e6dc; white-space:pre-wrap; word-wrap:break-word; overflow-wrap:anywhere; font-size:14px}
-.card .body:empty{display:none}
-.check{appearance:none; flex:none; width:18px; height:18px; margin-top:1px; border:2px solid var(--line2); border-radius:5px; background:none; cursor:pointer; position:relative}
-.check:checked{background:var(--mint); border-color:var(--mint)}
-.check:checked::after{content:""; position:absolute; left:4px; top:0; width:5px; height:10px; border:solid var(--mint-ink); border-width:0 2.5px 2.5px 0; transform:rotate(45deg)}
-.card footer{display:flex; align-items:center; gap:8px; margin-top:8px; font-size:11px; font-family:var(--mono); color:var(--faint); flex-wrap:wrap}
-.chip{border:1px solid var(--line2); border-radius:999px; padding:1px 8px; color:var(--dim)}
-.chip.assign{border-color:var(--ac); color:var(--ac)}
-.actions{margin-left:auto; display:flex; gap:2px; opacity:0; transition:.15s}
-.card:hover .actions,.card:focus-within .actions{opacity:1}
-@media (hover:none){.actions{opacity:1}}
-.actions button{background:none; border:0; color:var(--dim); padding:3px 6px; border-radius:6px; font-size:12px}
-.actions button:hover{background:rgba(255,255,255,.07); color:var(--ink)}
-.readonly .actions, .readonly .addcol, .readonly .check{pointer-events:none}
-.readonly .actions, .readonly .addcol, .readonly .colhead .tools{display:none}
+.editor textarea{width:100%; min-height:60vh; border:0; outline:none; resize:vertical; background:transparent; font-family:var(--serif); font-size:19px; line-height:1.55; color:var(--ink)}
+.editor .hint{font-family:var(--mono); font-size:11px; color:var(--dim); margin:0 0 14px; padding:8px 12px; border:1px dashed var(--rule); border-radius:10px}
+.editor .foot{display:flex; gap:10px; justify-content:flex-end; align-items:center; margin-top:14px; flex-wrap:wrap}
 
-/* ---------- layout: board ---------- */
-.board{display:grid; grid-auto-flow:column; grid-auto-columns:minmax(290px,1fr); gap:16px; overflow-x:auto; padding-bottom:16px; align-items:start}
-.col{background:rgba(13,18,18,.6); border:1px solid var(--line); border-radius:18px; padding:12px; backdrop-filter:blur(4px)}
-.colhead{display:flex; align-items:center; gap:8px; margin:2px 4px 12px}
-.colhead h2{margin:0; font-family:Righteous,var(--sans); font-weight:400; font-size:19px; letter-spacing:.04em; text-transform:uppercase}
-.colhead .n{font-family:var(--mono); font-size:11px; color:var(--faint)}
-.colhead .tools{margin-left:auto; display:flex; gap:2px}
-.iconbtn{background:none; border:0; color:var(--dim); width:28px; height:28px; border-radius:8px; font-size:15px; line-height:1}
-.iconbtn:hover{background:rgba(255,255,255,.07); color:var(--mint)}
-.addcol{width:100%; background:none; border:1px dashed var(--line2); color:var(--faint); border-radius:12px; padding:9px; font-size:13px}
-.addcol:hover{border-color:var(--mint); color:var(--mint)}
-.empty{color:var(--faint); font-size:13px; text-align:center; padding:18px 6px; font-family:var(--mono)}
+/* ---------- history ---------- */
+details.hist{margin:26px 4px 0; font-family:var(--mono); font-size:12px; color:var(--dim)}
+details.hist summary{cursor:pointer; width:max-content}
+details.hist ol{list-style:none; padding:0; margin:12px 0 0}
+details.hist li{display:flex; gap:10px; align-items:center; padding:4px 0; border-top:1px dashed var(--rule); flex-wrap:wrap}
 
-/* ---------- layout: timeline ---------- */
-.timeline{max-width:860px; margin:0 auto}
-.day{display:grid; grid-template-columns:120px 1fr; gap:20px; position:relative}
-.day::before{content:""; position:absolute; left:132px; top:8px; bottom:0; width:1px; background:linear-gradient(var(--line2),transparent)}
-.dayhead{position:sticky; top:12px; align-self:start; text-align:right; padding-top:4px}
-.dayhead .d{font-family:Righteous,var(--sans); font-size:38px; line-height:1; color:var(--bg); -webkit-text-stroke:1.2px var(--mint)}
-.dayhead .m{font-family:var(--mono); font-size:11px; letter-spacing:.2em; color:var(--dim); text-transform:uppercase}
-.dayhead .w{font-family:var(--mono); font-size:10px; color:var(--faint); text-transform:uppercase; letter-spacing:.15em}
-.daylist{padding:0 0 26px 14px}
-.timeline .card{margin-bottom:10px}
-.timeline .card::after{content:""; position:absolute}
-.sectag{font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--mint); border:1px solid rgba(70,240,176,.35); border-radius:999px; padding:1px 8px}
+/* ---------- dialogs ---------- */
+dialog{border:2px solid var(--ink); border-radius:18px; padding:0; background:var(--paper2); color:var(--ink); width:min(440px,calc(100vw - 32px)); box-shadow:8px 8px 0 var(--ink)}
+dialog::backdrop{background:rgba(20,18,16,.45); backdrop-filter:blur(2px)}
+.dlg{padding:22px 24px 20px}
+.dlg h2{font-family:var(--display); font-weight:800; font-size:28px; letter-spacing:-.02em; margin:0 0 4px; text-transform:lowercase}
+.dlg p{font-size:16px; margin:6px 0 14px; line-height:1.45}
+.dlg small{display:block; font-family:var(--mono); font-size:11px; color:var(--dim); line-height:1.5}
+.dlg ol{font-size:15px; padding-left:20px; line-height:1.45} .dlg li{margin-bottom:4px}
+.dlg code{font-family:var(--mono); font-size:12px; background:var(--paper); padding:1px 5px; border-radius:4px}
+.dlg label{display:block; font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); margin:12px 0 5px}
+.dlg input{width:100%; font-family:var(--mono); font-size:15px; padding:10px 12px; border:2px solid var(--ink); border-radius:10px; background:#fff; outline:none}
+.dlg input:focus{box-shadow:3px 3px 0 var(--acid)}
+.dlg .foot{display:flex; justify-content:flex-end; gap:10px; margin-top:18px}
+.dlg .err{color:var(--red); font-family:var(--mono); font-size:12px; min-height:16px; margin-top:8px}
 
-/* ---------- layout: grid ---------- */
-.tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px}
-.tab{background:none; border:1px solid var(--line2); border-radius:999px; padding:6px 14px; font-family:Righteous,var(--sans); letter-spacing:.05em; text-transform:uppercase; font-size:14px; color:var(--dim)}
-.tab .n{font-family:var(--mono); font-size:10px; color:var(--faint); margin-left:4px}
-.tab.on{border-color:var(--mint); color:var(--mint); box-shadow:0 0 14px rgba(70,240,176,.2) inset}
-.masonry{columns:4 260px; column-gap:14px}
+.toast{position:fixed; left:50%; bottom:22px; transform:translate(-50%,20px); opacity:0; transition:.25s; background:var(--ink); color:var(--paper2); font-family:var(--mono); font-size:13px; padding:9px 16px; border-radius:999px; z-index:200; pointer-events:none}
+.toast.show{opacity:1; transform:translate(-50%,0)}
 
-/* ---------- modal ---------- */
-dialog{
-  background:var(--panel); color:var(--ink); border:1px solid var(--line2); border-radius:18px; padding:0;
-  width:min(560px,calc(100vw - 32px)); box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 40px rgba(70,240,176,.08);
-}
-dialog::backdrop{background:rgba(0,0,0,.65); backdrop-filter:blur(3px)}
-.dlg{padding:20px 22px 18px}
-.dlg h2{margin:0 0 4px; font-family:Righteous,var(--sans); font-weight:400; font-size:24px; letter-spacing:.04em; text-transform:uppercase}
-.dlg .sub{font-family:var(--mono); font-size:11px; color:var(--dim); margin-bottom:16px}
-.field{display:flex; flex-direction:column; gap:5px; margin-bottom:12px}
-.field label{font-family:var(--mono); font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:.12em}
-.field input,.field textarea,.field select{background:var(--bg); border:1px solid var(--line2); border-radius:10px; padding:9px 11px; outline:none; width:100%}
-.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--mint)}
-.field textarea{min-height:130px; resize:vertical}
-.row{display:flex; gap:12px} .row .field{flex:1}
-.dlg .foot{display:flex; gap:8px; justify-content:flex-end; align-items:center; margin-top:6px}
-.dlg .foot .hint{margin-right:auto; font-family:var(--mono); font-size:10px; color:var(--faint)}
-.dlg p{color:#c6e6dc; font-size:14px}
-.dlg ol{padding-left:20px; color:#c6e6dc; font-size:14px} .dlg li{margin-bottom:6px}
-.dlg code{font-family:var(--mono); font-size:12px; background:var(--bg); padding:1px 5px; border-radius:5px; color:var(--mint)}
-.pickme{display:flex; gap:12px; margin:14px 0 6px}
-.pickme button{flex:1; background:var(--bg); border:2px solid var(--line2); border-radius:14px; padding:16px 8px; text-align:center}
-.pickme button b{display:block; font-family:Righteous,var(--sans); font-weight:400; font-size:20px; letter-spacing:.06em; color:var(--c); text-transform:uppercase}
-.pickme button span{font-size:11px; font-family:var(--mono); color:var(--dim)}
-.pickme button:hover{border-color:var(--c); box-shadow:0 0 18px color-mix(in srgb,var(--c) 35%,transparent)}
-
-.banner{max-width:1500px; margin:0 auto 14px; padding:0 28px}
-.banner div{border:1px dashed var(--line2); border-radius:12px; padding:9px 14px; font-size:13px; color:var(--dim); display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-.banner b{color:var(--ink)}
-
-.toast{position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(20px); opacity:0; background:var(--mint); color:var(--mint-ink); padding:9px 16px; border-radius:999px; font-weight:600; font-size:13px; transition:.25s; z-index:50; pointer-events:none}
-.toast.show{opacity:1; transform:translateX(-50%)}
-.toast.err{background:var(--red); color:#fff}
-
-@media (max-width:720px){
-  header.top{padding:16px 16px 10px}
-  .toolbar{padding:4px 16px 14px}
-  main{padding:0 16px 80px}
-  .banner{padding:0 16px}
-  .search{width:100%; order:10}
-  .board{grid-auto-flow:row; grid-auto-columns:auto; overflow:visible}
-  .day{grid-template-columns:1fr; gap:6px}
-  .day::before{display:none}
-  .dayhead{position:static; text-align:left; display:flex; gap:10px; align-items:baseline}
-  .dayhead .d{font-size:30px}
-  .daylist{padding:0 0 16px}
-  .row{flex-direction:column; gap:0}
+@media (max-width:680px){
+  .wrap{padding:12px 12px 70px}
+  .hero{aspect-ratio:auto; min-height:270px}
+  .hero h1{max-width:100%}
+  .hero svg.star{right:-26%; top:30%; height:88%; opacity:.95}
+  .hero .txt{padding:16px}
+  .doc{padding:18px 16px 22px; box-shadow:4px 4px 0 var(--ink)}
+  .para{grid-template-columns:1fr; gap:4px}
+  .stamp{flex-direction:row; align-items:center; gap:8px; padding:0}
+  .para .text{font-size:17px; padding-left:12px}
 }
 </style>
 </head>
 <body>
-<div id="app"></div>
+<div class="wrap">
+  <header class="hero" aria-label="one-eyed starfish">
+    <div class="dots"></div><div class="sun"></div><div class="blob"></div>
+    <svg class="star" id="star" viewBox="-110 -110 220 220" aria-hidden="true"></svg>
+    <div class="txt">
+      <div class="meta"><span>transmissions // working document</span><br><span id="lastline">loading…</span></div>
+      <h1>one-eyed <em>starfish</em></h1>
+      <div class="legend"><span class="tag red">red · bárbara</span><span class="tag purple">purple · mileu</span><span class="tag green">green · jonathan</span></div>
+    </div>
+  </header>
+
+  <div class="bar">
+    <span class="status busy" id="status"><i></i><span>loading…</span></span>
+    <span class="spacer"></span>
+    <span id="who"></span>
+    <button class="btn go" id="editbtn">✎ edit</button>
+  </div>
+
+  <main id="main"></main>
+  <details class="hist" id="hist"><summary>edit history</summary><ol id="histlist"></ol></details>
+</div>
 <dialog id="dlg"><div class="dlg" id="dlgbody"></div></dialog>
 <div class="toast" id="toast"></div>
 
 <script>
-/* ============ config ============ */
-const CFG = { owner:'mileuu', repo:'one-eyed-starfish', branch:'data', path:'board.json' };
-const MEMBERS = {
-  red:    { name:'Red',    who:'violin' },
-  purple: { name:'Purple', who:'electronics · e-bass' },
-  green:  { name:'Green',  who:'drums' },
-};
-const params = new URLSearchParams(location.search);
-const LOCAL = params.has('local') || location.protocol === 'file:';
+/* ================= config ================= */
+const CFG = { owner:'mileuu', repo:'one-eyed-starfish', branch:'data', doc:'doc.json', keys:'keys.json' };
+const MEMBERS = { purple:{ name:'Mileu' }, red:{ name:'Bárbara' }, green:{ name:'Jonathan' } };
+const LOCAL = new URLSearchParams(location.search).has('local') || location.protocol === 'file:';
 const LS = {
-  get(k, d){ try{ const v = localStorage.getItem('oes.'+k); return v===null ? d : JSON.parse(v) }catch{ return d } },
-  set(k, v){ try{ localStorage.setItem('oes.'+k, JSON.stringify(v)) }catch{} },
-  del(k){ try{ localStorage.removeItem('oes.'+k) }catch{} },
+  get(k,d){ try{ const v = localStorage.getItem('oes2.'+k); return v===null ? d : JSON.parse(v) }catch{ return d } },
+  set(k,v){ try{ localStorage.setItem('oes2.'+k, JSON.stringify(v)) }catch{} },
+  del(k){ try{ localStorage.removeItem('oes2.'+k) }catch{} },
 };
 
-/* ---- edit key from URL #key=... (never sent to any server) ---- */
-(function grabKey(){
-  const m = location.hash.match(/key=([^&]+)/);
-  if (m){ LS.set('key', decodeURIComponent(m[1])); history.replaceState(null,'',location.pathname+location.search) }
-})();
-
-/* ============ state ============ */
+/* ================= state ================= */
 const S = {
-  data:null, sha:null,
-  key: LS.get('key', null),
-  me: LS.get('me', null),
-  layout: LS.get('layout', 'board'),
-  tab: LS.get('tab', 'all'),
-  q:'', who:null,
-  status:'busy', statusText:'loading…',
+  doc:null, sha:null,
+  session: LS.get('session', null),   // { member, token }
+  editing:null,                       // { baseBlocks, baseSha }
 };
-const canEdit = () => LOCAL || !!S.key;
+const $ = id => document.getElementById(id);
 
-/* ============ seed ============ */
-function seed(){
-  const now = new Date().toISOString();
-  const e = (section, title, body, author, extra={}) => ({ id:uid(), section, title, body, author, created:now, updated:null, ...extra });
-  return {
-    version:1,
-    sections:[
-      { id:'ideas', name:'Ideas', kind:'notes' },
-      { id:'tasks', name:'Tasks', kind:'tasks' },
-      { id:'gigs',  name:'Gigs & Dates', kind:'notes' },
-      { id:'info',  name:'Info', kind:'notes' },
-      { id:'links', name:'Links', kind:'notes' },
-    ],
-    entries:[
-      e('info','Abstract','one-eyed starfish is a concert-length performance that uses myth and continuous music to explore how the universe (and the systems within them) come into being, organize themselves, and persist without conscious intention.','purple',{pinned:true}),
-      e('info','Members','Red – Bárbara Cotrim (violin)\nPurple – Pedro Mileu (electronics, e-bass)\nGreen – Jonathan Hartwig (drums)','purple'),
-      e('ideas','Spoken text fragments','Prophecies, echoes, internal voices — collect lines here as they come.','purple'),
-      e('tasks','Try out this board','Add an idea, tick a task, switch layouts (top left).','purple',{assignee:'any'}),
-    ],
-  };
-}
-
-/* ============ storage (GitHub contents API, or localStorage for testing) ============ */
-const API = `https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${CFG.path}`;
-const b64enc = s => { const b = new TextEncoder().encode(s); let bin=''; for (let i=0;i<b.length;i+=0x8000) bin += String.fromCharCode.apply(null, b.subarray(i,i+0x8000)); return btoa(bin) };
-const b64dec = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\s/g,'')), c=>c.charCodeAt(0)));
-function headers(){ const h = { Accept:'application/vnd.github+json' }; if (S.key) h.Authorization = 'Bearer '+S.key; return h }
-
-async function load(){
-  if (LOCAL){
-    let d = LS.get('localdata', null);
-    if (!d){ d = seed(); LS.set('localdata', d); LS.set('localsha', 0) }
-    return { data:d, sha:String(LS.get('localsha', 0)) };
-  }
-  let r = await fetch(`${API}?ref=${CFG.branch}&t=${Date.now()}`, { headers:headers(), cache:'no-store' });
-  if (r.status === 401 && S.key){ throw Object.assign(new Error('Edit key was rejected'), { badKey:true }) }
-  if (r.ok){ const j = await r.json(); return { data:JSON.parse(b64dec(j.content)), sha:j.sha } }
-  if (r.status === 404) return { data:null, sha:null };
-  // rate-limited viewer → fall back to raw file
-  r = await fetch(`https://raw.githubusercontent.com/${CFG.owner}/${CFG.repo}/${CFG.branch}/${CFG.path}?t=${Date.now()}`, { cache:'no-store' });
-  if (!r.ok) throw new Error('Could not load board ('+r.status+')');
-  return { data: await r.json(), sha:null };
-}
-
-async function save(data, sha, message){
-  if (LOCAL){
-    const cur = String(LS.get('localsha', 0));
-    if (sha !== null && sha !== cur) throw Object.assign(new Error('conflict'), { conflict:true });
-    const next = String(+cur + 1);
-    LS.set('localdata', data); LS.set('localsha', next);
-    return next;
-  }
-  const body = { message, content: b64enc(JSON.stringify(data, null, 1)), branch: CFG.branch };
-  if (sha) body.sha = sha;
-  const r = await fetch(API, { method:'PUT', headers:{ ...headers(), 'Content-Type':'application/json' }, body:JSON.stringify(body) });
-  if (r.status === 409 || r.status === 422) throw Object.assign(new Error('conflict'), { conflict:true });
-  if (r.status === 401 || r.status === 403 || r.status === 404) throw Object.assign(new Error('Edit key has no write access'), { badKey:true });
-  if (!r.ok) throw new Error('Save failed ('+r.status+')');
-  return (await r.json()).content.sha;
-}
-
-/* Apply a change on top of the LATEST version, retrying on conflicts — so two people
-   saving at the same time never overwrite each other. */
-let queue = Promise.resolve();
-function mutate(fn, message){
-  fn(S.data); render();                // optimistic
-  setStatus('busy','saving…');
-  queue = queue.then(async () => {
-    for (let attempt=0; attempt<6; attempt++){
-      try{
-        const fresh = await load();
-        const data = fresh.data || seed();
-        fn(data);
-        const sha = await save(data, fresh.sha, `${MEMBERS[S.me]?.name || 'Someone'}: ${message}`);
-        S.data = data; S.sha = sha; render(); setStatus('ok','saved'); return;
-      }catch(err){
-        if (err.conflict){ await new Promise(r=>setTimeout(r, 300 + Math.random()*700)); continue }
-        console.error(err); setStatus('err', err.message); toast(err.message, true);
-        if (err.badKey) openKeyDialog();
-        await refresh(true); return;
-      }
-    }
-    setStatus('err','could not save — try again'); toast('Could not save, please try again', true);
-  });
-  return queue;
-}
-
-async function refresh(force){
-  if (!force && (document.hidden || dlg.open)) return;
-  try{
-    const { data, sha } = await load();
-    if (!data){
-      if (canEdit()){ const d = seed(); S.sha = await save(d, null, 'Create board'); S.data = d }
-      else { S.data = seed(); }
-    } else if (force || sha !== S.sha || !sha){ S.data = data; S.sha = sha }
-    else { setStatus('ok', canEdit() ? 'up to date' : 'view only'); return }
-    normalize(); render(); setStatus('ok', canEdit() ? 'up to date' : 'view only');
-  }catch(err){ console.error(err); setStatus('err', err.message); if (err.badKey){ toast('That edit key does not work', true); } if (!S.data){ S.data = { sections:[], entries:[] }; render() } }
-}
-function normalize(){ S.data.sections ||= []; S.data.entries ||= [] }
-
-/* ============ helpers ============ */
-function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7) }
+/* ================= little helpers ================= */
 const pad = n => String(n).padStart(2,'0');
 const fmtDate = iso => { const d = new Date(iso); return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}` };
 const fmtTime = iso => { const d = new Date(iso); return `${pad(d.getHours())}:${pad(d.getMinutes())}` };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const linkify = s => esc(s).replace(/(https?:\/\/[^\s<]+[^\s<.,;:!?)\]'"])/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
-const section = id => S.data.sections.find(s => s.id === id);
-function setStatus(kind, text){ S.status = kind; S.statusText = text; const el = document.querySelector('.status'); if (el){ el.className = 'status '+kind; el.lastChild.textContent = text } }
-let toastT; function toast(msg, err){ const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show' + (err?' err':''); clearTimeout(toastT); toastT = setTimeout(()=>t.className='toast'+(err?' err':''), 2600) }
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const tag = m => `<span class="tag ${m}">${MEMBERS[m]?.name || '?'}</span>`;
+function setStatus(k,t){ $('status').className = 'status '+k; $('status').lastChild.textContent = t }
+let tt; function toast(m){ const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(()=>t.classList.remove('show'), 2600) }
 
-function visible(list){
-  const q = S.q.trim().toLowerCase();
-  return list.filter(e =>
-    (!S.who || e.author === S.who || e.assignee === S.who) &&
-    (!q || (e.title+' '+e.body).toLowerCase().includes(q)));
+/* ================= storage: GitHub (or localStorage with ?local) ================= */
+const b64enc = s => { const b = new TextEncoder().encode(s); let bin=''; for (let i=0;i<b.length;i+=0x8000) bin += String.fromCharCode.apply(null, b.subarray(i,i+0x8000)); return btoa(bin) };
+const b64dec = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\s/g,'')), c=>c.charCodeAt(0)));
+const apiUrl = p => `https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${p}`;
+
+async function readFile(path, token){
+  if (LOCAL){ const v = LS.get('file.'+path, null); return v ? { data:v.data, sha:v.sha } : { data:null, sha:null } }
+  const h = { Accept:'application/vnd.github+json' }; if (token) h.Authorization = 'Bearer '+token;
+  let r = await fetch(`${apiUrl(path)}?ref=${CFG.branch}&t=${Date.now()}`, { headers:h, cache:'no-store' });
+  if (r.ok){ const j = await r.json(); return { data:JSON.parse(b64dec(j.content)), sha:j.sha } }
+  if (r.status === 404) return { data:null, sha:null };
+  if (r.status === 401) throw Object.assign(new Error('GitHub key no longer works'), { badToken:true });
+  // unauthenticated rate limit → raw file fallback (read only)
+  r = await fetch(`https://raw.githubusercontent.com/${CFG.owner}/${CFG.repo}/${CFG.branch}/${path}?t=${Date.now()}`, { cache:'no-store' });
+  if (r.status === 404) return { data:null, sha:null };
+  if (!r.ok) throw new Error('could not load ('+r.status+')');
+  return { data: await r.json(), sha:'raw'+Date.now() };
 }
-function sorted(list){
-  return [...list].sort((a,b) =>
-    (!!b.pinned - !!a.pinned) || (!!a.done - !!b.done) || (b.created.localeCompare(a.created)));
-}
-
-/* ============ render ============ */
-const dlg = document.getElementById('dlg');
-const app = document.getElementById('app');
-
-function cardHTML(e, opts={}){
-  const sec = section(e.section);
-  const isTask = sec?.kind === 'tasks';
-  const edited = e.updated ? `<span title="edited ${fmtDate(e.updated)} ${fmtTime(e.updated)}">edited ${fmtDate(e.updated)}</span>` : '';
-  const assign = isTask && e.assignee && e.assignee !== 'any'
-    ? `<span class="chip assign" style="--ac:var(--${e.assignee})">→ ${MEMBERS[e.assignee].name}</span>`
-    : isTask ? `<span class="chip">→ anyone</span>` : '';
-  return `<article class="card ${e.author||''} ${e.pinned?'pinned':''} ${e.done?'done':''}" data-id="${e.id}">
-    <div class="stamp">
-      <span class="date">${fmtDate(e.created)}</span><span class="time">${fmtTime(e.created)}</span>
-      ${e.author ? `<span class="by">${MEMBERS[e.author]?.name||''}</span>` : ''}
-      ${opts.showSection && sec ? `<span class="sectag">${esc(sec.name)}</span>` : ''}
-      ${e.pinned ? '<span class="pin" title="pinned">★</span>' : ''}
-    </div>
-    <h3>${isTask ? `<input type="checkbox" class="check" data-act="done" ${e.done?'checked':''} aria-label="done">` : ''}<span>${esc(e.title)}</span></h3>
-    <div class="body">${linkify(e.body)}</div>
-    <footer>${assign}${edited}
-      <span class="actions">
-        <button data-act="pin">${e.pinned?'unpin':'pin'}</button>
-        <button data-act="edit">edit</button>
-        <button data-act="del">delete</button>
-      </span>
-    </footer>
-  </article>`;
+async function writeFile(path, data, sha, message, token){
+  if (LOCAL){
+    const cur = LS.get('file.'+path, null);
+    if ((cur?.sha || null) !== (sha || null)) throw Object.assign(new Error('conflict'), { conflict:true });
+    const next = uid(); LS.set('file.'+path, { data, sha:next }); return next;
+  }
+  const body = { message, content:b64enc(JSON.stringify(data, null, 1)), branch:CFG.branch };
+  if (sha) body.sha = sha;
+  const r = await fetch(apiUrl(path), { method:'PUT', headers:{ Accept:'application/vnd.github+json', Authorization:'Bearer '+token, 'Content-Type':'application/json' }, body:JSON.stringify(body) });
+  if (r.status === 409 || r.status === 422) throw Object.assign(new Error('conflict'), { conflict:true });
+  if ([401,403,404].includes(r.status)) throw Object.assign(new Error('GitHub key has no write access'), { badToken:true });
+  if (!r.ok) throw new Error('save failed ('+r.status+')');
+  return (await r.json()).content.sha;
 }
 
+/* ================= passkeys: GitHub key encrypted once per member ================= */
+const te = new TextEncoder();
+const normPass = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').trim().toLowerCase();
+const toB64 = u8 => btoa(String.fromCharCode(...u8));
+const fromB64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt){
+  const km = await crypto.subtle.importKey('raw', te.encode(normPass(pass)), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name:'PBKDF2', salt, iterations:250000, hash:'SHA-256' }, km, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']);
+}
+async function seal(token, pass){
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = new Uint8Array(await crypto.subtle.encrypt({ name:'AES-GCM', iv }, await deriveKey(pass, salt), te.encode(token)));
+  return { salt:toB64(salt), iv:toB64(iv), ct:toB64(ct) };
+}
+async function unseal(box, pass){
+  try{
+    const pt = await crypto.subtle.decrypt({ name:'AES-GCM', iv:fromB64(box.iv) }, await deriveKey(pass, fromB64(box.salt)), fromB64(box.ct));
+    return new TextDecoder().decode(pt);
+  }catch{ return null }
+}
+
+/* ================= document model =================
+   doc = { version:2, blocks:[{ id, text, by, at }], log:[{ by, at, added, removed }] }
+   Each paragraph (separated by an empty line) is a block carrying who last wrote it and when. */
+const emptyDoc = () => ({ version:2, blocks:[], log:[] });
+const splitParas = text => text.replace(/\r/g,'').split(/\n[ \t]*\n+/).map(s => s.replace(/^\n+|\s+$/g,'')).filter(s => s.trim());
+
+function lcsPairs(a, b){
+  const n = a.length, m = b.length, dp = Array.from({ length:n+1 }, () => new Uint16Array(m+1));
+  for (let i=n-1;i>=0;i--) for (let j=m-1;j>=0;j--) dp[i][j] = a[i]===b[j] ? dp[i+1][j+1]+1 : Math.max(dp[i+1][j], dp[i][j+1]);
+  const pairs = []; let i=0, j=0;
+  while (i<n && j<m){ if (a[i]===b[j]){ pairs.push([i,j]); i++; j++ } else if (dp[i+1][j] >= dp[i][j+1]) i++; else j++ }
+  return pairs;
+}
+/* Diff my edit against what I started from → a list of keep/insert steps + deletions,
+   which can be replayed on the latest version (so simultaneous edits don't clobber each other). */
+function diff(baseBlocks, newText){
+  const paras = splitParas(newText), pairs = lcsPairs(baseBlocks.map(b=>b.text), paras);
+  const keptBase = new Map(pairs.map(([i,j]) => [j,i]));
+  const steps = paras.map((t,j) => keptBase.has(j) ? { keep: baseBlocks[keptBase.get(j)].id } : { ins:t });
+  const keptIds = new Set(pairs.map(([i]) => baseBlocks[i].id));
+  const deleted = baseBlocks.filter(b => !keptIds.has(b.id)).map(b => b.id);
+  return { steps, deleted, added: steps.filter(s=>s.ins).length };
+}
+function applyDiff(doc, { steps, deleted, added }, member, at){
+  const del = new Set(deleted);
+  const blocks = doc.blocks.filter(b => !del.has(b.id));
+  let pos = -1;
+  for (const s of steps){
+    if (s.keep){ const i = blocks.findIndex(b => b.id === s.keep); if (i >= 0) pos = i }
+    else { blocks.splice(++pos, 0, { id:uid(), text:s.ins, by:member, at }) }
+  }
+  doc.blocks = blocks;
+  doc.log = [{ by:member, at, added, removed:deleted.length }, ...(doc.log || [])].slice(0, 300);
+  return doc;
+}
+
+/* ================= render ================= */
 function render(){
-  if (!S.data) return;
-  const ro = !canEdit();
-  const dots = Object.entries(MEMBERS).map(([k,m]) =>
-    `<button class="dot ${S.me===k?'on':''}" style="--c:var(--${k})" data-me="${k}" title="I am ${m.name}"></button>`).join('');
-  const whoDots = Object.entries(MEMBERS).map(([k,m]) =>
-    `<button class="dot ${S.who===k?'on':''}" style="--c:var(--${k})" data-who="${k}" title="only ${m.name}"></button>`).join('');
+  const doc = S.doc || emptyDoc();
+  const me = S.session?.member;
+  $('who').innerHTML = me ? `editing as ${tag(me)} <button class="btn plain" id="lockbtn">lock</button>` : '';
+  $('editbtn').style.display = S.editing ? 'none' : '';
+  const last = doc.log?.[0];
+  $('lastline').textContent = last ? `last edit ${fmtDate(last.at)} ${fmtTime(last.at)} by ${MEMBERS[last.by]?.name.toLowerCase()}` : 'blank page';
 
-  let body = '';
-  if (S.layout === 'board') body = renderBoard();
-  else if (S.layout === 'timeline') body = renderTimeline();
-  else body = renderGrid();
-
-  const active = document.activeElement?.classList.contains('search');
-  app.innerHTML = `
-  <header class="top">
-    <h1 class="logo">one-eyed starfish<small>// shared board</small></h1>
-    <div class="spacer"></div>
-    ${ro ? '' : `<div class="me">I am ${dots}</div>`}
-    <div class="status ${S.status}"><i></i><span>${esc(S.statusText)}</span></div>
-  </header>
-  ${ro && !LOCAL ? `<div class="banner"><div>👁 <b>View only.</b> Open the edit link once on this device to write here. <button class="btn ghost" data-act="key">I have an edit key</button></div></div>` : ''}
-  <div class="toolbar">
-    <div class="seg">
-      <button data-layout="board" class="${S.layout==='board'?'on':''}">Board</button>
-      <button data-layout="timeline" class="${S.layout==='timeline'?'on':''}">Timeline</button>
-      <button data-layout="grid" class="${S.layout==='grid'?'on':''}">Cards</button>
-    </div>
-    <input class="search" type="search" placeholder="search…" value="${esc(S.q)}">
-    <span class="whofilter">${whoDots}</span>
-    <div class="spacer"></div>
-    ${ro ? '' : `<button class="btn ghost" data-act="settings" title="sections & edit link">⚙</button>
-    <button class="btn primary" data-act="new">+ New</button>`}
-  </div>
-  <main class="${ro?'readonly':''}">${body}</main>`;
-  if (active){ const s = app.querySelector('.search'); s.focus(); s.setSelectionRange(s.value.length, s.value.length) }
+  if (S.editing){
+    if (!$('ed')){
+      $('main').innerHTML = `<div class="doc editor">
+        <div class="hint">writing as ${tag(me)} · leave an <b>empty line</b> between paragraphs · every paragraph you add or change gets today's date and your colour</div>
+        <textarea id="ed" spellcheck="true" placeholder="start writing…"></textarea>
+        <div class="foot"><button class="btn plain" id="cancelbtn">cancel</button><button class="btn go" id="savebtn">save</button></div></div>`;
+      const ta = $('ed');
+      ta.value = S.editing.baseBlocks.map(b => b.text).join('\n\n');
+      ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
+      ta.addEventListener('keydown', e => { if (e.key==='Enter' && (e.metaKey||e.ctrlKey)) saveEdit(); if (e.key==='Escape') cancelEdit() });
+      $('cancelbtn').onclick = cancelEdit; $('savebtn').onclick = saveEdit;
+    }
+  } else {
+    const newest = doc.blocks.reduce((m,b) => b.at > m ? b.at : m, '');
+    $('main').innerHTML = `<article class="doc">${doc.blocks.length ? doc.blocks.map(b => `
+      <section class="para ${b.by} ${b.at===newest ? 'fresh' : ''}">
+        <div class="stamp"><span class="d">${fmtDate(b.at)}</span><span class="t">${fmtTime(b.at)}</span>${tag(b.by)}</div>
+        <div class="text">${linkify(b.text)}</div>
+      </section>`).join('') : `<div class="empty">nothing written yet — press <b>✎ edit</b> to start</div>`}</article>`;
+  }
+  $('histlist').innerHTML = (doc.log || []).slice(0, 60).map(l =>
+    `<li><span>${fmtDate(l.at)} ${fmtTime(l.at)}</span>${tag(l.by)}<span>+${l.added} / −${l.removed} paragraphs</span></li>`).join('') || '<li>no edits yet</li>';
+  $('hist').style.display = doc.log?.length ? '' : 'none';
+  $('lockbtn')?.addEventListener('click', lock);
 }
 
-function renderBoard(){
-  return `<div class="board">${S.data.sections.map(sec => {
-    const all = S.data.entries.filter(e => e.section === sec.id);
-    const list = sorted(visible(all));
-    const open = sec.kind==='tasks' ? all.filter(e=>!e.done).length + ' open' : all.length;
-    return `<section class="col" data-section="${sec.id}">
-      <div class="colhead"><h2>${esc(sec.name)}</h2><span class="n">${open}</span>
-        <span class="tools"><button class="iconbtn" data-act="new" data-section="${sec.id}" title="add to ${esc(sec.name)}">+</button></span></div>
-      ${list.map(e => cardHTML(e)).join('') || `<div class="empty">nothing yet</div>`}
-      <button class="addcol" data-act="new" data-section="${sec.id}">+ add ${sec.kind==='tasks'?'task':'note'}</button>
-    </section>`;
-  }).join('')}</div>`;
+/* ================= load / refresh ================= */
+async function refresh(force){
+  if (!force && (document.hidden || S.editing)) return;
+  try{
+    const { data, sha } = await readFile(CFG.doc, S.session?.token);
+    if (force || sha !== S.sha){ S.doc = data || emptyDoc(); S.sha = sha; render() }
+    setStatus('ok', S.session ? 'up to date' : 'read only');
+  }catch(e){
+    console.error(e); setStatus('err', e.message);
+    if (e.badToken){ lock(); toast('Saved key stopped working — enter your passkey again') }
+    if (!S.doc){ S.doc = emptyDoc(); render() }
+  }
 }
 
-function renderTimeline(){
-  const list = visible(S.data.entries).sort((a,b) => b.created.localeCompare(a.created));
-  if (!list.length) return `<div class="empty">nothing here yet</div>`;
-  const days = new Map();
-  for (const e of list){ const k = e.created.slice(0,10) && fmtDate(e.created); if (!days.has(k)) days.set(k, []); days.get(k).push(e) }
-  return `<div class="timeline">${[...days].map(([k, es]) => {
-    const d = new Date(es[0].created);
-    return `<div class="day"><div class="dayhead">
-        <div class="d">${pad(d.getDate())}</div>
-        <div class="m">${d.toLocaleString('en',{month:'short'})} ${d.getFullYear()}</div>
-        <div class="w">${d.toLocaleString('en',{weekday:'long'})}</div></div>
-      <div class="daylist">${es.map(e => cardHTML(e, {showSection:true})).join('')}</div></div>`;
-  }).join('')}</div>`;
+/* ================= edit flow ================= */
+$('editbtn').onclick = () => S.session ? startEdit() : askPass();
+
+async function startEdit(){
+  setStatus('busy','opening…');
+  await refresh(true);
+  S.editing = { baseBlocks: structuredClone(S.doc.blocks), baseSha:S.sha };
+  render(); setStatus('ok','editing');
 }
-
-function renderGrid(){
-  if (S.tab !== 'all' && !section(S.tab)) S.tab = 'all';
-  const tabs = [{id:'all', name:'All'}, ...S.data.sections].map(s => {
-    const n = s.id==='all' ? S.data.entries.length : S.data.entries.filter(e=>e.section===s.id).length;
-    return `<button class="tab ${S.tab===s.id?'on':''}" data-tab="${s.id}">${esc(s.name)}<span class="n">${n}</span></button>`;
-  }).join('');
-  const list = sorted(visible(S.data.entries.filter(e => S.tab==='all' || e.section===S.tab)));
-  return `<div class="tabs">${tabs}</div>
-    <div class="masonry">${list.map(e => cardHTML(e, {showSection:S.tab==='all'})).join('') || '<div class="empty">nothing here yet</div>'}</div>`;
+function cancelEdit(){
+  const ta = $('ed');
+  const changed = ta && ta.value !== S.editing.baseBlocks.map(b=>b.text).join('\n\n');
+  if (changed && !confirm('Throw away your changes?')) return;
+  S.editing = null; $('main').innerHTML = ''; render(); refresh(true);
 }
-
-/* ============ dialogs ============ */
-function openDialog(html, onMount){ document.getElementById('dlgbody').innerHTML = html; dlg.showModal(); onMount?.(dlg) }
-function closeDialog(){ dlg.close() }
-dlg.addEventListener('click', e => { if (e.target === dlg) closeDialog() });
-
-function pickMe(then){
-  openDialog(`<h2>Who are you?</h2><div class="sub">just so we know who wrote what — remembered on this device</div>
-    <div class="pickme">${Object.entries(MEMBERS).map(([k,m]) =>
-      `<button style="--c:var(--${k})" data-pick="${k}"><b>${m.name}</b><span>${m.who}</span></button>`).join('')}</div>`,
-    d => d.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => {
-      S.me = b.dataset.pick; LS.set('me', S.me); closeDialog(); render(); then?.();
-    }));
+async function saveEdit(){
+  const text = $('ed').value;
+  const d = diff(S.editing.baseBlocks, text);
+  if (!d.added && !d.deleted.length){ S.editing = null; $('main').innerHTML=''; render(); return toast('nothing changed') }
+  const me = S.session.member, at = new Date().toISOString();
+  $('savebtn').disabled = true; setStatus('busy','saving…');
+  for (let attempt = 0; attempt < 6; attempt++){
+    try{
+      const latest = await readFile(CFG.doc, S.session.token);
+      const doc = applyDiff(latest.data || emptyDoc(), d, me, at);
+      const sha = await writeFile(CFG.doc, doc, latest.sha, `${MEMBERS[me].name}: +${d.added} −${d.deleted.length}`, S.session.token);
+      if (latest.sha && latest.sha !== S.editing.baseSha) toast('someone else edited too — both versions were merged');
+      else toast('saved');
+      S.doc = doc; S.sha = sha; S.editing = null; $('main').innerHTML = ''; render(); setStatus('ok','saved');
+      return;
+    }catch(e){
+      if (e.conflict){ await new Promise(r => setTimeout(r, 300 + Math.random()*700)); continue }
+      console.error(e); setStatus('err', e.message); toast(e.message); $('savebtn').disabled = false;
+      if (e.badToken){ lock(true); askPass() }
+      return;
+    }
+  }
+  setStatus('err','could not save'); toast('could not save — try again'); $('savebtn').disabled = false;
 }
+function lock(keepEditing){ S.session = null; LS.del('session'); if (!keepEditing){ S.editing = null; $('main').innerHTML = '' } render(); setStatus('ok','read only') }
 
-function openEditor(entry, sectionId){
-  if (!S.me) return pickMe(() => openEditor(entry, sectionId));
-  const isNew = !entry;
-  const e = entry || { section: sectionId || (S.layout==='grid' && S.tab!=='all' ? S.tab : S.data.sections[0]?.id), title:'', body:'', assignee:'any' };
-  const opts = S.data.sections.map(s => `<option value="${s.id}" ${s.id===e.section?'selected':''}>${esc(s.name)}</option>`).join('');
-  const now = new Date().toISOString();
-  openDialog(`<form method="dialog" id="ef">
-    <h2>${isNew ? 'New entry' : 'Edit entry'}</h2>
-    <div class="sub">${isNew ? `${fmtDate(now)} · ${fmtTime(now)} · ${MEMBERS[S.me].name}` : `created ${fmtDate(e.created)} ${fmtTime(e.created)} by ${MEMBERS[e.author]?.name||'?'}`}</div>
-    <div class="row">
-      <div class="field"><label>Section</label><select name="section">${opts}</select></div>
-      <div class="field" id="assignf"><label>Who does it</label><select name="assignee">
-        <option value="any">anyone</option>${Object.entries(MEMBERS).map(([k,m]) => `<option value="${k}" ${e.assignee===k?'selected':''}>${m.name}</option>`).join('')}
-      </select></div>
-    </div>
-    <div class="field"><label>Title</label><input name="title" required maxlength="200" value="${esc(e.title)}" autocomplete="off"></div>
-    <div class="field"><label>Details</label><textarea name="body" placeholder="write freely — links become clickable">${esc(e.body)}</textarea></div>
-    <div class="foot"><span class="hint">ctrl/⌘ + enter to save</span>
-      <button type="button" class="btn ghost" data-close>Cancel</button>
-      <button class="btn primary">${isNew ? 'Post' : 'Save'}</button></div>
-  </form>`, d => {
-    const f = d.querySelector('#ef');
-    const syncAssign = () => d.querySelector('#assignf').style.display = section(f.section.value)?.kind==='tasks' ? '' : 'none';
-    f.section.onchange = syncAssign; syncAssign();
-    d.querySelector('[data-close]').onclick = closeDialog;
-    f.addEventListener('keydown', ev => { if (ev.key==='Enter' && (ev.metaKey||ev.ctrlKey)) f.requestSubmit() });
-    f.title.focus();
-    f.onsubmit = ev => {
-      ev.preventDefault();
-      const v = { section:f.section.value, title:f.title.value.trim(), body:f.body.value.trim(), assignee:f.assignee.value };
-      if (!v.title) return;
-      if (section(v.section)?.kind !== 'tasks') delete v.assignee;
-      closeDialog();
-      if (isNew){
-        const ne = { id:uid(), ...v, author:S.me, created:new Date().toISOString(), updated:null };
-        mutate(d => d.entries.push(ne), `add "${v.title}"`);
-      } else {
-        const id = entry.id;
-        mutate(d => { const x = d.entries.find(x => x.id===id); if (x) Object.assign(x, v, { updated:new Date().toISOString() }) }, `edit "${v.title}"`);
+/* ================= dialogs ================= */
+const dlg = $('dlg');
+function openDialog(html, mount){ $('dlgbody').innerHTML = html; dlg.showModal(); mount?.() }
+dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close() });
+
+function askPass(){
+  openDialog(`<form id="pf"><h2>who's writing?</h2>
+    <p>Type your passkey. It decides which name &amp; colour your edits get.</p>
+    <input name="p" type="password" autocomplete="off" autocapitalize="off" placeholder="passkey" required>
+    <div class="err" id="perr"></div>
+    <div class="foot"><button type="button" class="btn plain" id="pclose">cancel</button><button class="btn go">unlock</button></div></form>`, () => {
+    const f = $('pf'); f.p.focus();
+    $('pclose').onclick = () => dlg.close();
+    f.onsubmit = async e => {
+      e.preventDefault(); $('perr').textContent = 'checking…';
+      let keys;
+      try{ keys = (await readFile(CFG.keys)).data }catch(err){ $('perr').textContent = err.message; return }
+      if (!keys){ dlg.close(); return setup() }
+      for (const [member, box] of Object.entries(keys.members || {})){
+        const token = await unseal(box, f.p.value);
+        if (token){
+          S.session = { member, token }; LS.set('session', S.session);
+          dlg.close(); toast(`hi ${MEMBERS[member].name}`);
+          if (S.editing){ render(); $('savebtn').disabled = false; return }   // keep unsaved text
+          return startEdit();
+        }
       }
+      $('perr').textContent = 'wrong passkey';
+      f.p.select();
     };
   });
 }
 
-function openSettings(){
-  const link = S.key ? `${location.origin}${location.pathname}#key=${encodeURIComponent(S.key)}` : '';
-  openDialog(`<h2>Settings</h2><div class="sub">sections are shared · edit link stays private</div>
-    <div class="field"><label>Sections</label>
-      ${S.data.sections.map((s,i) => `<div class="row" style="align-items:center;gap:6px;margin-bottom:6px">
-        <input data-sname="${s.id}" value="${esc(s.name)}" style="flex:1;background:var(--bg);border:1px solid var(--line2);border-radius:10px;padding:7px 10px">
-        <select data-skind="${s.id}" style="background:var(--bg);border:1px solid var(--line2);border-radius:10px;padding:7px"><option value="notes" ${s.kind==='notes'?'selected':''}>notes</option><option value="tasks" ${s.kind==='tasks'?'selected':''}>tasks</option></select>
-        <button class="iconbtn" data-up="${i}" title="move left">↑</button>
-        <button class="iconbtn" data-sdel="${s.id}" title="delete section">✕</button></div>`).join('')}
-      <button class="addcol" data-sadd>+ add section</button>
-    </div>
-    ${LOCAL ? '<p><code>local test mode</code> — data only lives in this browser.</p>' : `
-    <div class="field"><label>Edit link (send only to the band)</label>
-      <div class="row" style="gap:6px"><input readonly value="${esc(link)}" id="elink" style="flex:1"><button class="btn" data-copy>Copy</button></div></div>
-    <p style="font-size:12px;color:var(--faint)">Anyone with this link can edit. <button class="btn ghost" data-forget style="font-size:11px;padding:3px 9px">Remove key from this device</button></p>`}
-    <div class="foot"><button class="btn primary" data-close>Done</button></div>`, d => {
-    d.querySelector('[data-close]').onclick = closeDialog;
-    d.querySelectorAll('[data-sname]').forEach(inp => inp.onchange = () => {
-      const id = inp.dataset.sname, name = inp.value.trim(); if (!name) return;
-      mutate(x => { const s = x.sections.find(s=>s.id===id); if (s) s.name = name }, `rename section to ${name}`);
-    });
-    d.querySelectorAll('[data-skind]').forEach(sel => sel.onchange = () => {
-      const id = sel.dataset.skind, kind = sel.value;
-      mutate(x => { const s = x.sections.find(s=>s.id===id); if (s) s.kind = kind }, `section type → ${kind}`);
-    });
-    d.querySelectorAll('[data-up]').forEach(b => b.onclick = () => {
-      const i = +b.dataset.up; if (!i) return; const id = S.data.sections[i].id;
-      mutate(x => { const j = x.sections.findIndex(s=>s.id===id); if (j>0){ const [s] = x.sections.splice(j,1); x.sections.splice(j-1,0,s) } }, 'reorder sections');
-      setTimeout(openSettings, 0);
-    });
-    d.querySelectorAll('[data-sdel]').forEach(b => b.onclick = () => {
-      const id = b.dataset.sdel, s = section(id), n = S.data.entries.filter(e=>e.section===id).length;
-      if (!confirm(`Delete section "${s.name}"${n ? ` and its ${n} entries` : ''}?`)) return;
-      mutate(x => { x.sections = x.sections.filter(s=>s.id!==id); x.entries = x.entries.filter(e=>e.section!==id) }, `delete section ${s.name}`);
-      setTimeout(openSettings, 0);
-    });
-    d.querySelector('[data-sadd]').onclick = () => {
-      const name = prompt('Section name?'); if (!name?.trim()) return;
-      const kind = confirm('Is this a to-do list (with checkboxes)?\nOK = tasks, Cancel = notes') ? 'tasks' : 'notes';
-      const ns = { id:uid(), name:name.trim(), kind };
-      mutate(x => x.sections.push(ns), `add section ${ns.name}`);
-      setTimeout(openSettings, 0);
+/* One-time setup: the GitHub key is encrypted with each person's passkey and stored in keys.json.
+   The passkeys themselves are never stored anywhere. */
+function setup(){
+  openDialog(`<form id="sf"><h2>connect editing</h2>
+    <p>One time only. Paste a GitHub key that can write to this repo, then set the three passkeys.</p>
+    ${LOCAL ? '<small>local test mode — any text works as the key</small>' : `<small>make it at github.com → settings → developer settings → fine-grained tokens: only repo <code>${CFG.repo}</code>, permission <b>Contents: read &amp; write</b>.</small>`}
+    <label>github key</label><input name="token" type="password" autocomplete="off" required>
+    <label>passkey for <span class="tag purple">Mileu</span></label><input name="purple" autocomplete="off" required>
+    <label>passkey for <span class="tag red">Bárbara</span></label><input name="red" autocomplete="off" required>
+    <label>passkey for <span class="tag green">Jonathan</span></label><input name="green" autocomplete="off" required>
+    <div class="err" id="serr"></div>
+    <div class="foot"><button type="button" class="btn plain" id="sclose">cancel</button><button class="btn go">connect</button></div></form>`, () => {
+    const f = $('sf');
+    $('sclose').onclick = () => dlg.close();
+    f.onsubmit = async e => {
+      e.preventDefault();
+      const ps = ['purple','red','green'].map(m => normPass(f[m].value));
+      if (new Set(ps).size < 3){ $('serr').textContent = 'the three passkeys must be different'; return }
+      $('serr').textContent = 'encrypting…';
+      try{
+        const token = f.token.value.trim(), members = {};
+        for (const m of ['purple','red','green']) members[m] = await seal(token, f[m].value);
+        const cur = await readFile(CFG.keys, token);
+        await writeFile(CFG.keys, { version:1, members }, cur.sha, 'Set up passkeys', token);
+        dlg.close(); toast('editing connected — now unlock with your passkey'); setTimeout(askPass, 400);
+      }catch(err){ $('serr').textContent = err.message }
     };
-    d.querySelector('[data-copy]')?.addEventListener('click', () => { navigator.clipboard.writeText(link).then(()=>toast('Edit link copied')) });
-    d.querySelector('[data-forget]')?.addEventListener('click', () => { if (confirm('Remove the edit key from this device? (the board stays as it is)')){ LS.del('key'); S.key = null; closeDialog(); render() } });
   });
 }
 
-function openKeyDialog(){
-  openDialog(`<h2>Edit key</h2><div class="sub">only needed once per device</div>
-    <p>Easiest: ask a bandmate for the <b>edit link</b> and open it. Or paste the key here:</p>
-    <form id="kf"><div class="field"><input name="k" type="password" placeholder="github_pat_…" autocomplete="off"></div>
-    <div class="foot"><button type="button" class="btn ghost" data-close>Cancel</button><button class="btn primary">Use key</button></div></form>`, d => {
-    d.querySelector('[data-close]').onclick = closeDialog;
-    d.querySelector('#kf').onsubmit = ev => { ev.preventDefault(); const k = ev.target.k.value.trim(); if (!k) return;
-      S.key = k; LS.set('key', k); closeDialog(); refresh(true).then(render) };
-  });
-}
+/* ================= the one-eyed starfish (generated SVG) ================= */
+(function drawStar(){
+  let seed = 7; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+  const pts = [], N = 260;
+  for (let k=0;k<N;k++){
+    const t = k/N * Math.PI*2;
+    const arm = Math.pow(Math.abs(Math.cos(2.5*t)), 2.2);
+    let r = 34 + 66*arm;
+    r += (k%2 ? -1 : 1) * (4 + rnd()*9) * (0.4 + arm);   // jagged, spiky edge
+    pts.push([r*Math.sin(t), -r*Math.cos(t)]);
+  }
+  const d = 'M' + pts.map(p => p.map(v => v.toFixed(1)).join(' ')).join('L') + 'Z';
+  $('star').innerHTML = `
+    <path d="${d}" fill="#ff4fa3" transform="translate(6 5)" style="mix-blend-mode:multiply"/>
+    <path d="${d}" fill="#a6ef2b" stroke="#141210" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="${d}" fill="none" stroke="#141210" stroke-width="1" stroke-dasharray="1 4" transform="scale(.72)" opacity=".6"/>
+    <ellipse cx="0" cy="2" rx="20" ry="12" fill="#f7f3eb" stroke="#141210" stroke-width="2.4"/>
+    <circle cx="2" cy="2" r="7.5" fill="#141210"/><circle cx="4.5" cy="-0.5" r="2.2" fill="#f7f3eb"/>`;
+})();
 
-/* ============ events ============ */
-app.addEventListener('click', ev => {
-  const t = ev.target.closest('button,[data-act],input.check'); if (!t) return;
-  if (t.dataset.layout){ S.layout = t.dataset.layout; LS.set('layout', S.layout); return render() }
-  if (t.dataset.tab){ S.tab = t.dataset.tab; LS.set('tab', S.tab); return render() }
-  if (t.dataset.me){ S.me = t.dataset.me; LS.set('me', S.me); return render() }
-  if (t.dataset.who){ S.who = S.who === t.dataset.who ? null : t.dataset.who; return render() }
-  const act = t.dataset.act; if (!act) return;
-  if (act === 'key') return openKeyDialog();
-  if (!canEdit()) return;
-  if (act === 'new') return openEditor(null, t.dataset.section);
-  if (act === 'settings') return openSettings();
-  const card = t.closest('.card'); if (!card) return;
-  const id = card.dataset.id, e = S.data.entries.find(x => x.id===id); if (!e) return;
-  if (act === 'edit') return openEditor(e);
-  if (act === 'del'){ if (confirm(`Delete "${e.title}"?`)) mutate(d => { d.entries = d.entries.filter(x => x.id!==id) }, `delete "${e.title}"`); return }
-  if (act === 'pin') return mutate(d => { const x = d.entries.find(x=>x.id===id); if (x) x.pinned = !x.pinned }, `${e.pinned?'unpin':'pin'} "${e.title}"`);
-  if (act === 'done'){ if (!S.me) { ev.preventDefault(); return pickMe() } const v = t.checked; return mutate(d => { const x = d.entries.find(x=>x.id===id); if (x){ x.done = v; x.doneAt = v ? new Date().toISOString() : null } }, `${v?'done':'reopen'} "${e.title}"`) }
-});
-app.addEventListener('input', ev => { if (ev.target.classList.contains('search')){ S.q = ev.target.value; render() } });
-document.addEventListener('keydown', ev => {
-  if (ev.key === 'n' && !dlg.open && canEdit() && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){ ev.preventDefault(); openEditor() }
-});
-document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh() });
-
-/* ============ go ============ */
+/* ================= go ================= */
 render();
 refresh(true);
-setInterval(refresh, canEdit() ? 20000 : 60000);
+setInterval(refresh, 20000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh() });
+window.addEventListener('beforeunload', e => { if (S.editing && $('ed')?.value !== S.editing.baseBlocks.map(b=>b.text).join('\n\n')){ e.preventDefault(); e.returnValue = '' } });
 </script>
 </body>
 </html>
