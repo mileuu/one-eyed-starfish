@@ -17,6 +17,11 @@
  "log": [
   {
    "by": "purple",
+   "at": "2026-11-15T23:53:15.015Z",
+   "what": "task edited: \"share email address (pls put it on the _important page, top right)\""
+  },
+  {
+   "by": "purple",
    "at": "2026-11-15T23:52:05.451Z",
    "what": "info +1 / −0 paragraphs"
   },
@@ -95,7 +100,7 @@
    "items": [
     {
      "id": "mwigxcohzyzqf",
-     "text": "share email address",
+     "text": "share email address (pls put it on the _important page, top right)",
      "who": "red",
      "done": false,
      "by": "purple",
