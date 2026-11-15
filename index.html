@@ -18,6 +18,7 @@
   --mono:"IBM Plex Mono",ui-monospace,monospace;
 }
 *{box-sizing:border-box}
+[hidden]{display:none !important}
 html,body{margin:0}
 body{background:var(--bg); color:var(--ink); font-family:var(--serif); min-height:100vh; overflow-x:hidden; -webkit-font-smoothing:antialiased}
 a{color:var(--ink); text-decoration-color:var(--faint); text-underline-offset:3px}
@@ -103,11 +104,21 @@ section{margin-bottom:54px}
 .addrow button:hover{color:var(--ink)}
 
 /* ---------- info document ---------- */
-.para{display:grid; grid-template-columns:150px 1fr; gap:20px; padding:16px 0; border-bottom:1px solid var(--line)}
-.stamp{font-family:var(--mono); font-size:12px; color:var(--dim); display:flex; flex-direction:column; gap:3px; padding-top:4px}
-.stamp .d{color:var(--ink); font-size:14px}
-.para .text{font-size:19px; line-height:1.6; white-space:pre-wrap; overflow-wrap:anywhere; color:var(--text); border-left:2px solid var(--c); padding-left:18px}
-.para.fresh .text{background:linear-gradient(90deg, color-mix(in srgb,var(--c) 8%,transparent), transparent 55%)}
+.flow{padding-top:18px; font-size:17px; line-height:1.7; color:var(--text); max-width:72ch}
+.flow p{margin:0 0 .9em; white-space:pre-wrap; overflow-wrap:anywhere}
+.st{font-family:var(--mono); font-size:10.5px; letter-spacing:.02em; color:var(--c); margin-right:8px; white-space:nowrap; vertical-align:1px}
+.st b{font-weight:400; color:var(--dim)}
+
+/* ---------- top-right page link + locked page ---------- */
+.hero .top{display:flex; justify-content:space-between; gap:12px; align-items:baseline}
+.hero .pagelink{font-family:var(--mono); font-size:12px; color:#e9e7e2; text-decoration:none; border-bottom:1px solid rgba(233,231,226,.4); position:relative; z-index:2; white-space:nowrap}
+.hero .pagelink:hover{border-color:#e9e7e2}
+.hero.small{height:130px}
+.hero.small h1{font-size:clamp(28px,4vw,40px)}
+#vaultpage{margin-top:34px; max-width:860px}
+.locked{padding:40px 0; font-family:var(--mono); font-size:13px; color:var(--dim); line-height:1.8}
+.locked .ic{font-size:22px; color:var(--ink); display:block; margin-bottom:6px}
+.vnote{font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:20px}
 .editor{padding-top:16px}
 .editor .hint{font-family:var(--mono); font-size:12px; color:var(--dim); margin-bottom:14px; line-height:1.6}
 .editor textarea{width:100%; min-height:55vh; background:#0a0a0a; border:1px solid var(--line); border-radius:10px; padding:16px 18px; outline:none; resize:vertical; font-family:var(--serif); font-size:19px; line-height:1.6; color:var(--ink)}
@@ -150,10 +161,7 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
   .grid{margin-top:26px}
   .ev{grid-template-columns:86px 1fr auto; gap:10px}
   .ev .d{font-size:13px} .ev .t{font-size:17px}
-  .para{grid-template-columns:1fr; gap:6px}
-  .stamp{flex-direction:row; gap:10px; align-items:baseline; padding:0}
-  .stamp .d{font-size:12px}
-  .para .text{font-size:17px; padding-left:14px}
+  .flow{font-size:16px}
   .task{gap:10px} .task .tag{width:auto}
   .task .tt{font-size:17px}
   .lhead h3{font-size:20px}
@@ -179,7 +187,7 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
     </svg>
     <div class="shade"></div><div class="grain"></div>
     <div class="txt">
-      <div class="meta" id="lastline">loading…</div>
+      <div class="top"><div class="meta" id="lastline">loading…</div><a class="pagelink" id="pagelink" href="#important">_important</a></div>
       <div>
         <h1>one-eyed starfish</h1>
         <div class="legend"><span class="tag red">bárbara</span><span class="tag purple">mileu</span><span class="tag green">jonathan</span></div>
@@ -200,6 +208,7 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
     </main>
     <aside><section id="events"></section></aside>
   </div>
+  <section id="vaultpage" hidden></section>
 </div>
 <dialog id="dlg"><div class="dlg" id="dlgbody"></div></dialog>
 <div class="toast" id="toast"></div>
@@ -360,7 +369,12 @@ function renderAll(){
   $('unlockbtn')?.addEventListener('click', () => askPass());
   const last = doc.log?.[0];
   $('lastline').textContent = last ? `last change ${fmtDate(last.at)} ${fmtTime(last.at)} · ${MEMBERS[last.by]?.name.toLowerCase()}` : 'working document';
-  renderEvents(doc); renderTodos(doc); renderInfo(doc);
+  const onVault = location.hash === '#important';
+  $('page').hidden = onVault; $('vaultpage').hidden = !onVault;
+  document.querySelector('.hero').classList.toggle('small', onVault);
+  $('pagelink').textContent = onVault ? '← back' : '_important';
+  $('pagelink').href = onVault ? '#' : '#important';
+  if (onVault) renderVault(); else { renderEvents(doc); renderTodos(doc); renderInfo(doc) }
   if (S.refocus){ const el = document.querySelector(S.refocus); el?.focus(); S.refocus = null }
 }
 
@@ -404,30 +418,51 @@ function renderTodos(doc){
     }).join('') || '<div class="empty">no lists yet</div>'}`;
 }
 
-function renderInfo(doc){
-  const me = S.session?.member;
-  if (S.editing){
-    if ($('ed')) return;
-    $('info').innerHTML = `<div class="shead"><h2>_info</h2></div>
-      <div class="editor">
-        <div class="hint">writing as ${tag(me)} — leave an empty line between paragraphs. every paragraph you add or change gets today's date and your colour.</div>
-        <textarea id="ed" spellcheck="true" placeholder="start writing…"></textarea>
-        <div class="foot"><button class="link" id="cancelbtn">cancel</button><button class="btn" id="savebtn">save</button></div></div>`;
-    const ta = $('ed');
-    ta.value = S.editing.baseBlocks.map(b => b.text).join('\n\n');
-    ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
-    ta.addEventListener('keydown', e => { if (e.key==='Enter' && (e.metaKey||e.ctrlKey)) saveEdit(); if (e.key==='Escape') cancelEdit() });
-    $('cancelbtn').onclick = cancelEdit; $('savebtn').onclick = saveEdit;
-    return;
+/* One flowing text. Paragraphs saved together in one edit share one small stamp in front. */
+function renderFlow(blocks){
+  if (!blocks.length) return '<div class="empty">nothing written yet</div>';
+  const chunks = [];
+  for (const b of blocks){
+    const last = chunks[chunks.length-1];
+    if (last && last.by === b.by && last.at === b.at) last.blocks.push(b); else chunks.push({ by:b.by, at:b.at, blocks:[b] });
   }
-  const newest = doc.blocks.reduce((m,b) => b.at > m ? b.at : m, '');
+  return `<div class="flow">${chunks.map(c => c.blocks.map((b,i) =>
+    `<p>${i===0 ? `<span class="st ${c.by}" title="${fmtDate(c.at)} ${fmtTime(c.at)}"><b>${fmtDate(c.at)}</b> ${(MEMBERS[c.by]?.name||'?').toLowerCase()}</span>` : ''}${linkify(b.text)}</p>`).join('')).join('')}</div>`;
+}
+function mountEditor(container, title){
+  if ($('ed')) return;
+  container.innerHTML = `<div class="shead"><h2>${title}</h2></div>
+    <div class="editor">
+      <div class="hint">writing as ${tag(S.session.member)} — leave an empty line between paragraphs. what you add or change gets today's date and your name.</div>
+      <textarea id="ed" spellcheck="true" placeholder="start writing…"></textarea>
+      <div class="foot"><button class="link" id="cancelbtn">cancel</button><button class="btn" id="savebtn">save</button></div></div>`;
+  const ta = $('ed');
+  ta.value = edText();
+  ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
+  ta.addEventListener('keydown', e => { if (e.key==='Enter' && (e.metaKey||e.ctrlKey)) saveEdit(); if (e.key==='Escape') cancelEdit() });
+  $('cancelbtn').onclick = cancelEdit; $('savebtn').onclick = saveEdit;
+}
+function renderInfo(doc){
+  if (S.editing?.target === 'info') return mountEditor($('info'), '_info');
   const hist = doc.log.slice(0, 50);
   $('info').innerHTML = `<div class="shead"><h2>_info</h2><span class="spacer"></span><button class="link" data-act="info-edit">edit</button></div>
-    ${doc.blocks.map(b => `<div class="para ${b.by} ${b.at===newest?'fresh':''}">
-        <div class="stamp"><span class="d">${fmtDate(b.at)}</span><span>${fmtTime(b.at)}</span>${tag(b.by)}</div>
-        <div class="text">${linkify(b.text)}</div></div>`).join('') || '<div class="empty">nothing written yet</div>'}
+    ${renderFlow(doc.blocks)}
     ${hist.length ? `<details class="hist"><summary>change history</summary><ol>${hist.map(l =>
       `<li><span>${fmtDate(l.at)} ${fmtTime(l.at)}</span>${tag(l.by)}<span>${esc(l.what || `info +${l.added} / −${l.removed}`)}</span></li>`).join('')}</ol></details>` : ''}`;
+}
+function renderVault(){
+  const el = $('vaultpage');
+  if (S.editing?.target === 'vault' && S.vault) return mountEditor(el, '_important');
+  if (!S.vault){
+    el.innerHTML = `<div class="shead"><h2>_important</h2></div>
+      <div class="locked"><span class="ic">🔒</span>this page is locked.<br>it opens with your passkey and locks again when you leave it.<br><br>
+      <button class="btn" data-act="vault-open">unlock</button></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="shead"><h2>_important</h2><span class="spacer"></span>
+      <button class="link" data-act="vault-lock">lock</button><button class="link" data-act="vault-edit">edit</button></div>
+    ${renderFlow(S.vault.content.blocks)}
+    <div class="vnote">encrypted — only readable with a passkey · locks after 10 min idle or when you leave this page</div>`;
 }
 
 /* ================= load / refresh ================= */
@@ -445,12 +480,18 @@ async function refresh(force){
   }
 }
 
-/* ================= info edit flow ================= */
-async function startEdit(){
-  if (!S.session) return askPass(startEdit);
+/* ================= edit flow (info + important page) ================= */
+async function startEdit(target){
+  if (!S.session) return askPass(() => startEdit(target));
   setStatus('busy','opening…');
-  await refresh(true);
-  S.editing = { baseBlocks: structuredClone(S.doc.blocks), baseSha:S.sha };
+  if (target === 'vault'){
+    if (!S.vault) return;
+    await refreshVault(true);
+    S.editing = { target, baseBlocks: structuredClone(S.vault.content.blocks), baseSha:S.vault.sha };
+  } else {
+    await refresh(true);
+    S.editing = { target, baseBlocks: structuredClone(S.doc.blocks), baseSha:S.sha };
+  }
   renderAll(); setStatus('ok','editing');
 }
 function edText(){ return S.editing.baseBlocks.map(b=>b.text).join('\n\n') }
@@ -459,16 +500,101 @@ function cancelEdit(){
   S.editing = null; renderAll(); refresh(true);
 }
 async function saveEdit(){
+  const target = S.editing.target;
   const d = diff(S.editing.baseBlocks, $('ed').value);
   if (!d.added && !d.deleted.length){ S.editing = null; renderAll(); return toast('nothing changed') }
   const me = S.session.member, at = new Date().toISOString();
   $('savebtn').disabled = true;
-  const merged = S.sha && S.sha !== S.editing.baseSha;
+  const curSha = target === 'vault' ? S.vault?.sha : S.sha;
+  const merged = curSha && curSha !== S.editing.baseSha;
   S.editing = null;
-  const ok = await commit(doc => applyDiff(doc, d, me, at), `info +${d.added} / −${d.deleted.length} paragraphs`);
+  const what = `${target === 'vault' ? 'important' : 'info'} +${d.added} / −${d.deleted.length} paragraphs`;
+  const ok = target === 'vault'
+    ? await commitVault(c => applyDiff(c, d, me, at), what)
+    : await commit(doc => applyDiff(doc, d, me, at), what);
   if (ok) toast(merged ? 'saved — merged with someone else’s edit' : 'saved');
 }
-function lock(keepEditing){ S.session = null; LS.del('session'); if (!keepEditing) S.editing = null; renderAll(); setStatus('ok','read only') }
+function lock(keepEditing){ S.session = null; S.vault = null; LS.del('session'); if (!keepEditing) S.editing = null; renderAll(); setStatus('ok','read only') }
+
+/* ================= _important page: encrypted in the repo =================
+   vault.json = { boxes:{ token:…, purple:…, red:…, green:… }, iv, ct }
+   A random page key encrypts the content. That key is stored wrapped with each member's passkey
+   (added the first time they open it) and with the GitHub key, so it survives either changing. */
+const VAULT = 'vault.json';
+async function aesKey(raw){ return crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt','decrypt']) }
+async function encJSON(key, obj){ const iv = crypto.getRandomValues(new Uint8Array(12)); return { iv:toB64(iv), ct:toB64(new Uint8Array(await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, te.encode(JSON.stringify(obj))))) } }
+async function decJSON(key, box){ return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name:'AES-GCM', iv:fromB64(box.iv) }, key, fromB64(box.ct)))) }
+
+async function openVault(pass){
+  const { member, token } = S.session;
+  setStatus('busy','decrypting…');
+  try{
+    const cur = await readFile(VAULT, token);
+    let rawB64, key, content, sha = cur.sha;
+    if (!cur.data){
+      rawB64 = toB64(crypto.getRandomValues(new Uint8Array(32)));
+      key = await aesKey(fromB64(rawB64)); content = { blocks:[], log:[] };
+      const data = { version:1, boxes:{ token: await seal(rawB64, 'token:'+token), [member]: await seal(rawB64, pass) }, ...await encJSON(key, content) };
+      sha = await writeFile(VAULT, data, null, 'Create important page', token);
+    } else {
+      const boxes = { ...cur.data.boxes };
+      let viaMember = false, viaToken = false;
+      if (boxes[member]){ rawB64 = await unseal(boxes[member], pass); viaMember = !!rawB64 }
+      if (!rawB64 && boxes.token){ rawB64 = await unseal(boxes.token, 'token:'+token); viaToken = !!rawB64 }
+      if (!rawB64) throw new Error('could not open — ask a bandmate to open this page once');
+      key = await aesKey(fromB64(rawB64));
+      content = await decJSON(key, cur.data);
+      let heal = false;
+      if (!viaMember){ boxes[member] = await seal(rawB64, pass); heal = true }
+      if (!viaToken && !(boxes.token && await unseal(boxes.token, 'token:'+token))){ boxes.token = await seal(rawB64, 'token:'+token); heal = true }
+      if (heal){ try{ sha = await writeFile(VAULT, { ...cur.data, boxes }, cur.sha, 'Update important page access', token) }catch(e){ console.warn(e) } }
+    }
+    content.blocks ||= []; content.log ||= [];
+    S.vault = { key, content, sha };
+    setStatus('ok','up to date'); bumpIdle();
+  }catch(e){ console.error(e); setStatus('err', e.message); toast(e.message) }
+  renderAll();
+}
+async function refreshVault(force){
+  if (!S.vault || (!force && S.editing)) return;
+  try{
+    const cur = await readFile(VAULT, S.session.token);
+    if (cur.data && (force || cur.sha !== S.vault.sha)){
+      const c = await decJSON(S.vault.key, cur.data); c.blocks ||= []; c.log ||= [];
+      S.vault.content = c; S.vault.sha = cur.sha; if (!S.editing) renderAll();
+    }
+  }catch(e){ console.error(e) }
+}
+function commitVault(fn, what){
+  const me = S.session.member, at = new Date().toISOString();
+  setStatus('busy','saving…');
+  queue = queue.then(async () => {
+    for (let attempt = 0; attempt < 6; attempt++){
+      try{
+        const cur = await readFile(VAULT, S.session.token);
+        const c = await decJSON(S.vault.key, cur.data); c.blocks ||= []; c.log ||= [];
+        fn(c); c.log = [{ by:me, at, what }, ...c.log].slice(0, 300);
+        const data = { ...cur.data, ...await encJSON(S.vault.key, c) };
+        const sha = await writeFile(VAULT, data, cur.sha, `${MEMBERS[me].name}: important page updated`, S.session.token);
+        S.vault.content = c; S.vault.sha = sha; renderAll(); setStatus('ok','saved');
+        return true;
+      }catch(e){
+        if (e.conflict){ await new Promise(r => setTimeout(r, 300 + Math.random()*700)); continue }
+        console.error(e); setStatus('err', e.message); toast(e.message); return false;
+      }
+    }
+    setStatus('err','could not save'); return false;
+  });
+  return queue;
+}
+let idleT;
+function bumpIdle(){
+  clearTimeout(idleT);
+  if (S.vault) idleT = setTimeout(() => {
+    if (S.vault && S.editing?.target !== 'vault'){ S.vault = null; renderAll(); toast('_important locked') }
+  }, 10*60*1000);
+}
+['pointerdown','keydown','scroll','mousemove'].forEach(t => addEventListener(t, () => { if (S.vault) bumpIdle() }, { passive:true }));
 
 /* ================= dialogs ================= */
 const dlg = $('dlg');
@@ -494,7 +620,7 @@ function askPass(then){
           S.session = { member, token }; LS.set('session', S.session);
           dlg.close(); toast(`hi ${MEMBERS[member].name}`); renderAll(); refresh(true);
           if (S.editing && $('savebtn')) $('savebtn').disabled = false;
-          then?.(); return;
+          then?.(f.p.value); return;
         }
       }
       $('perr').textContent = 'wrong passkey'; f.p.select();
@@ -576,7 +702,10 @@ document.addEventListener('click', ev => {
   const act = b.dataset.act, doc = S.doc;
   const needs = fn => S.session ? fn() : askPass(fn);
   const lid = b.closest('[data-list]')?.dataset.list, iid = b.closest('[data-item]')?.dataset.item, eid = b.closest('[data-ev]')?.dataset.ev;
-  if (act === 'info-edit') return startEdit();
+  if (act === 'info-edit') return startEdit('info');
+  if (act === 'vault-open') return askPass(pass => openVault(pass));
+  if (act === 'vault-edit') return startEdit('vault');
+  if (act === 'vault-lock'){ S.vault = null; return renderAll() }
   if (act === 'ev-new') return needs(() => eventDialog());
   if (act === 'ev-edit') return needs(() => eventDialog(doc.events.find(e => e.id===eid)));
   if (act === 'list-new') return needs(() => listDialog());
@@ -608,7 +737,15 @@ document.addEventListener('submit', ev => {
 /* ================= go ================= */
 renderAll();
 refresh(true);
-setInterval(refresh, 20000);
+setInterval(() => { refresh(); refreshVault() }, 20000);
+let goingBack = false;
+addEventListener('hashchange', () => {
+  if (goingBack){ goingBack = false; return }
+  if (S.editing && $('ed') && $('ed').value !== edText() && !confirm('Leave without saving?')){ goingBack = true; history.back(); return }
+  S.editing = null; $('info').innerHTML = ''; $('vaultpage').innerHTML = '';
+  if (location.hash !== '#important') S.vault = null;      // the important page locks when you leave it
+  scrollTo(0,0); renderAll();
+});
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh() });
 window.addEventListener('beforeunload', e => { if (S.editing && $('ed') && $('ed').value !== edText()){ e.preventDefault(); e.returnValue = '' } });
 </script>
