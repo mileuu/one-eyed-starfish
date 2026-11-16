@@ -303,7 +303,7 @@ async function readFile(path, token){
 async function putRaw(path, b64, message, token){
   if (LOCAL){ LS.set('raw.'+path, b64); return }
   const r = await fetch(apiUrl(path), { method:'PUT', headers:{ Accept:'application/vnd.github+json', Authorization:'Bearer '+token, 'Content-Type':'application/json' }, body:JSON.stringify({ message, content:b64, branch:CFG.branch }) });
-  if (!r.ok) throw new Error(r.status === 413 ? 'file is too big' : 'upload failed ('+r.status+')');
+  if (!r.ok) throw new Error([413,422].includes(r.status) ? 'GitHub refused the file (too big for GitHub)' : 'upload failed ('+r.status+')');
 }
 async function deleteRaw(path, message, token){
   if (LOCAL){ LS.del('raw.'+path); return }
@@ -462,7 +462,7 @@ function renderDocs(doc){
   const dl = $('doclist');
   dl?.addEventListener('scroll', () => dl.classList.toggle('end', dl.scrollTop + dl.clientHeight >= dl.scrollHeight - 4), { passive:true });
 }
-const MAX_MB = 20;
+const GITHUB_MAX_MB = 100;   // GitHub's own hard limit per file
 const readB64 = file => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(file) });
 function uploadDialog(){
   openDialog(`<form id="uf"><h2>_upload</h2>
@@ -485,7 +485,7 @@ function uploadDialog(){
       if (!file) return $('uerr').textContent = 'choose a file first';
       if (!title) return $('uerr').textContent = 'give it a title';
       if (!/^(application\/pdf|image\/)/.test(file.type)) return $('uerr').textContent = 'only pdfs and photos';
-      if (file.size > MAX_MB*1048576) return $('uerr').textContent = `too big — max ${MAX_MB} MB`;
+      if (file.size >= GITHUB_MAX_MB*1048576) return $('uerr').textContent = `GitHub doesn't accept files of ${GITHUB_MAX_MB} MB or more — compress it or share a link instead`;
       $('ubtn').disabled = true; $('uerr').style.color = 'var(--dim)'; $('uerr').textContent = 'uploading…';
       try{
         const me = S.session.member, at = new Date().toISOString(), id = uid();
