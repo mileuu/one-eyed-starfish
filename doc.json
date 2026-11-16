@@ -17,6 +17,11 @@
  "log": [
   {
    "by": "purple",
+   "at": "2026-11-16T09:15:44.749Z",
+   "what": "list \"yj\" deleted"
+  },
+  {
+   "by": "purple",
    "at": "2026-11-16T09:15:38.371Z",
    "what": "list \"yj\" created"
   },
@@ -121,13 +126,6 @@
      "at": "2026-11-15T23:31:35.104Z"
     }
    ],
-   "by": "purple"
-  },
-  {
-   "id": "mwj1t2pu6pcq4",
-   "title": "yj",
-   "until": "",
-   "items": [],
    "by": "purple"
   }
  ],
