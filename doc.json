@@ -17,6 +17,11 @@
  "log": [
   {
    "by": "purple",
+   "at": "2026-11-16T09:20:39.845Z",
+   "what": "document renamed: \"poster test\""
+  },
+  {
+   "by": "purple",
    "at": "2026-11-16T09:19:37.914Z",
    "what": "document \"test\" uploaded"
   },
@@ -146,7 +151,7 @@
  "docs": [
   {
    "id": "mwj1xw1bvy0wr",
-   "title": "test",
+   "title": "poster test",
    "path": "files/2026-11-16-mwj1xw1bvy0wr.pdf",
    "name": "poster_versuchshaus_print (1).pdf",
    "type": "application/pdf",
