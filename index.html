@@ -56,7 +56,9 @@ input,select,textarea{font:inherit; color:inherit}
 
 /* ---------- page grid ---------- */
 .grid{display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:56px; margin-top:34px; align-items:start}
-aside{position:sticky; top:24px}
+aside{border-left:1px solid rgba(255,255,255,.13); padding-left:34px; margin-left:-22px; opacity:.72; transition:opacity .2s}
+aside:hover, aside:focus-within{opacity:1}
+aside section{margin-bottom:46px}
 
 /* ---------- sections (style of the reference) ---------- */
 section{margin-bottom:54px}
@@ -79,6 +81,24 @@ section{margin-bottom:54px}
 .ev .t span{color:var(--dim)}
 .ev.today .d{color:var(--accent)}
 .ev.past{opacity:.45}
+
+/* ---------- documents ---------- */
+.shead .n{font-family:var(--mono); font-size:11px; color:var(--faint)}
+.doclist{max-height:calc(5 * 61px); overflow-y:auto; scrollbar-width:thin; scrollbar-color:#333 transparent; overscroll-behavior:contain}
+.doclist.more{-webkit-mask-image:linear-gradient(#000 calc(100% - 34px), transparent); mask-image:linear-gradient(#000 calc(100% - 34px), transparent)}
+.doclist.more.end{-webkit-mask-image:none; mask-image:none}
+.doclist::-webkit-scrollbar{width:4px} .doclist::-webkit-scrollbar-thumb{background:#333; border-radius:4px}
+.dk{display:grid; grid-template-columns:38px minmax(0,1fr) auto; gap:12px; align-items:center; height:61px; border-bottom:1px solid var(--line); padding-right:4px}
+.dk .th{width:38px; height:38px; border-radius:5px; background:#141414; border:1px solid var(--line); overflow:hidden; display:grid; place-items:center; font-family:var(--mono); font-size:9px; letter-spacing:.06em; color:var(--dim); text-decoration:none}
+.dk .th img{width:100%; height:100%; object-fit:cover; display:block}
+.dk .dm{font-family:var(--mono); font-size:10px; color:var(--faint); display:flex; gap:8px; align-items:center; white-space:nowrap; overflow:hidden}
+.dk .dm .tag{font-size:10px}
+.dk .dt{display:block; font-size:16px; line-height:1.3; color:var(--ink); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.dk .dt:hover{text-decoration:underline; text-decoration-color:var(--faint)}
+.drop{display:block; border:1px dashed #333; border-radius:8px; padding:18px 12px; text-align:center; font-family:var(--mono); font-size:12px; color:var(--dim); cursor:pointer}
+.drop:hover,.drop.over{border-color:var(--ink); color:var(--ink)}
+.drop input{display:none}
+.drop b{display:block; font-weight:400; color:var(--ink); margin-top:6px; overflow-wrap:anywhere}
 
 /* ---------- to-do ---------- */
 .list{margin-top:26px}
@@ -166,7 +186,8 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
 
 @media (max-width:900px){
   .grid{grid-template-columns:1fr; gap:0}
-  aside{position:static; order:-1}
+  aside{order:-1; border-left:0; padding-left:0; margin-left:0; border-bottom:1px solid rgba(255,255,255,.13); margin-bottom:40px}
+  aside section:last-child{margin-bottom:26px}
 }
 @media (max-width:600px){
   .wrap{padding:14px 16px 80px}
@@ -220,7 +241,7 @@ dialog::backdrop{background:rgba(0,0,0,.75)}
       <section id="todos"></section>
       <section id="info"></section>
     </main>
-    <aside><section id="events"></section></aside>
+    <aside><section id="events"></section><section id="docs"></section></aside>
   </div>
   <section id="vaultpage" hidden></section>
 </div>
@@ -260,7 +281,7 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7
 const tag = m => `<span class="tag ${m}">${m === 'all' ? 'all' : (MEMBERS[m]?.name || '?').toLowerCase()}</span>`;
 function setStatus(k,t){ $('status').className = 'status '+k; $('status').lastChild.textContent = t }
 let tt; function toast(m){ const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(()=>t.classList.remove('show'), 2600) }
-const normalizeDoc = d => { d = d || {}; d.version = 3; d.blocks ||= []; d.log ||= []; d.todos ||= []; d.events ||= []; return d };
+const normalizeDoc = d => { d = d || {}; d.version = 3; d.blocks ||= []; d.log ||= []; d.todos ||= []; d.events ||= []; d.docs ||= []; return d };
 
 /* ================= storage: GitHub (or localStorage with ?local) ================= */
 const b64enc = s => { const b = new TextEncoder().encode(s); let bin=''; for (let i=0;i<b.length;i+=0x8000) bin += String.fromCharCode.apply(null, b.subarray(i,i+0x8000)); return btoa(bin) };
@@ -278,6 +299,19 @@ async function readFile(path, token){
   if (r.status === 404) return { data:null, sha:null };
   if (!r.ok) throw new Error('could not load ('+r.status+')');
   return { data: await r.json(), sha:'raw'+Date.now() };
+}
+async function putRaw(path, b64, message, token){
+  if (LOCAL){ LS.set('raw.'+path, b64); return }
+  const r = await fetch(apiUrl(path), { method:'PUT', headers:{ Accept:'application/vnd.github+json', Authorization:'Bearer '+token, 'Content-Type':'application/json' }, body:JSON.stringify({ message, content:b64, branch:CFG.branch }) });
+  if (!r.ok) throw new Error(r.status === 413 ? 'file is too big' : 'upload failed ('+r.status+')');
+}
+async function deleteRaw(path, message, token){
+  if (LOCAL){ LS.del('raw.'+path); return }
+  const h = { Accept:'application/vnd.github+json', Authorization:'Bearer '+token };
+  const g = await fetch(`${apiUrl(path)}?ref=${CFG.branch}`, { headers:h, cache:'no-store' });
+  if (!g.ok) return;
+  const { sha } = await g.json();
+  await fetch(apiUrl(path), { method:'DELETE', headers:{ ...h, 'Content-Type':'application/json' }, body:JSON.stringify({ message, sha, branch:CFG.branch }) });
 }
 async function writeFile(path, data, sha, message, token){
   if (LOCAL){
@@ -388,7 +422,7 @@ function renderAll(){
   document.querySelector('.hero').classList.toggle('small', onVault);
   $('pagelink').textContent = onVault ? '← back' : '_important';
   $('pagelink').href = onVault ? '#' : '#important';
-  if (onVault) renderVault(); else { renderEvents(doc); renderTodos(doc); renderInfo(doc) }
+  if (onVault) renderVault(); else { renderEvents(doc); renderDocs(doc); renderTodos(doc); renderInfo(doc) }
   if (S.refocus){ const el = document.querySelector(S.refocus); el?.focus(); S.refocus = null }
 }
 
@@ -404,6 +438,74 @@ function renderEvents(doc){
     ${upcoming.map(row).join('') || '<div class="empty">nothing planned yet</div>'}
     ${past.length ? `<details class="hist" ${S.showPast?'open':''} id="pastbox"><summary>past (${past.length})</summary>${past.map(row).join('')}</details>` : ''}`;
   $('pastbox')?.addEventListener('toggle', e => S.showPast = e.target.open);
+}
+
+/* ================= documents ================= */
+const isImg = d => /^image\//.test(d.type);
+function fileUrl(d){
+  if (LOCAL){ const b = LS.get('raw.'+d.path, ''); return b ? `data:${d.type};base64,${b}` : '#' }
+  return isImg(d)
+    ? `https://raw.githubusercontent.com/${CFG.owner}/${CFG.repo}/${CFG.branch}/${d.path}`
+    : `https://github.com/${CFG.owner}/${CFG.repo}/blob/${CFG.branch}/${d.path}`;
+}
+function renderDocs(doc){
+  const list = [...doc.docs].sort((a,b) => b.at.localeCompare(a.at));
+  $('docs').innerHTML = `<div class="shead"><h2>_documents</h2><span class="n">${list.length || ''}</span><span class="spacer"></span><button class="link" data-act="doc-new">+ upload</button></div>
+    ${list.length ? `<div class="doclist ${list.length > 5 ? 'more' : ''}" id="doclist">${list.map(d => {
+      const url = fileUrl(d);
+      return `<div class="dk" data-doc="${d.id}">
+        <a class="th" href="${url}" target="_blank" rel="noopener" title="open">${isImg(d) ? `<img src="${url}" alt="" loading="lazy">` : (d.name.split('.').pop() || 'file').slice(0,4).toUpperCase()}</a>
+        <div><div class="dm">${tag(d.by)}<span>${fmtDate(d.at)} ${fmtTime(d.at)}</span></div>
+          <a class="dt" href="${url}" target="_blank" rel="noopener" title="${esc(d.title)}">${esc(d.title)}</a></div>
+        <span class="acts"><button data-act="doc-edit">edit</button></span></div>`;
+    }).join('')}</div>` : '<div class="empty">no documents yet</div>'}`;
+  const dl = $('doclist');
+  dl?.addEventListener('scroll', () => dl.classList.toggle('end', dl.scrollTop + dl.clientHeight >= dl.scrollHeight - 4), { passive:true });
+}
+const MAX_MB = 20;
+const readB64 = file => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(file) });
+function uploadDialog(){
+  openDialog(`<form id="uf"><h2>_upload</h2>
+    <label class="drop" id="drop"><input type="file" name="file" accept="application/pdf,image/*" required>
+      choose a pdf or photo — or drop it here<b id="fname"></b></label>
+    <label>title (required)</label><input name="title" required maxlength="120" autocomplete="off" placeholder="e.g. tech rider december">
+    <div class="err" id="uerr"></div>
+    <div class="foot"><button type="button" class="link" id="uclose">cancel</button><button class="btn" id="ubtn">upload</button></div></form>`, () => {
+    const f = $('uf'), drop = $('drop');
+    let file = null;
+    const pick = fl => { if (!fl) return; file = fl; $('fname').textContent = `${fl.name} · ${(fl.size/1048576).toFixed(1)} MB`; f.title.focus() };
+    f.file.onchange = () => pick(f.file.files[0]);
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over') });
+    drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+    drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); pick(e.dataTransfer.files[0]); f.file.required = false });
+    $('uclose').onclick = () => dlg.close();
+    f.onsubmit = async e => {
+      e.preventDefault();
+      const title = f.title.value.trim();
+      if (!file) return $('uerr').textContent = 'choose a file first';
+      if (!title) return $('uerr').textContent = 'give it a title';
+      if (!/^(application\/pdf|image\/)/.test(file.type)) return $('uerr').textContent = 'only pdfs and photos';
+      if (file.size > MAX_MB*1048576) return $('uerr').textContent = `too big — max ${MAX_MB} MB`;
+      $('ubtn').disabled = true; $('uerr').style.color = 'var(--dim)'; $('uerr').textContent = 'uploading…';
+      try{
+        const me = S.session.member, at = new Date().toISOString(), id = uid();
+        const ext = (file.name.match(/\.([a-z0-9]{1,5})$/i)?.[1] || (file.type.split('/')[1] || 'bin')).toLowerCase();
+        const path = `files/${at.slice(0,10)}-${id}.${ext}`;
+        await putRaw(path, await readB64(file), `${MEMBERS[me].name}: upload "${title}"`, S.session.token);
+        const meta = { id, title, path, name:file.name, type:file.type, size:file.size, by:me, at };
+        dlg.close();
+        commit(d => { if (!d.docs.some(x => x.id === id)) d.docs.push(meta) }, `document "${title}" uploaded`);
+      }catch(err){ $('uerr').style.color = ''; $('uerr').textContent = err.message; $('ubtn').disabled = false }
+    };
+  });
+}
+function docEditDialog(d){
+  formDialog({ title:'_edit document', fields:[ { name:'title', label:'title', value:d.title, required:true } ],
+    onSubmit: v => commit(x => { const y = x.docs.find(y => y.id === d.id); if (y) y.title = v.title }, `document renamed: "${v.title}"`),
+    onDelete: async () => {
+      await commit(x => { x.docs = x.docs.filter(y => y.id !== d.id) }, `document deleted: "${d.title}"`);
+      try{ await deleteRaw(d.path, `delete ${d.path}`, S.session.token) }catch(e){ console.warn(e) }
+    } });
 }
 
 function renderTodos(doc){
@@ -792,6 +894,8 @@ document.addEventListener('click', ev => {
   if (act === 'vault-open') return askPass(pass => openVault(pass));
   if (act === 'vault-edit') return startEdit('vault');
   if (act === 'vault-lock'){ S.vault = null; return renderAll() }
+  if (act === 'doc-new') return needs(() => uploadDialog());
+  if (act === 'doc-edit') return needs(() => docEditDialog(doc.docs.find(x => x.id === b.closest('[data-doc]').dataset.doc)));
   if (act === 'ev-new') return needs(() => eventDialog());
   if (act === 'ev-edit') return needs(() => eventDialog(doc.events.find(e => e.id===eid)));
   if (act === 'list-new') return needs(() => listDialog());
