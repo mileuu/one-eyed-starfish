@@ -17,6 +17,11 @@
  "log": [
   {
    "by": "purple",
+   "at": "2026-11-16T09:15:38.371Z",
+   "what": "list \"yj\" created"
+  },
+  {
+   "by": "purple",
    "at": "2026-11-15T23:53:15.015Z",
    "what": "task edited: \"share email address (pls put it on the _important page, top right)\""
   },
@@ -117,6 +122,13 @@
     }
    ],
    "by": "purple"
+  },
+  {
+   "id": "mwj1t2pu6pcq4",
+   "title": "yj",
+   "until": "",
+   "items": [],
+   "by": "purple"
   }
  ],
  "events": [
@@ -127,5 +139,6 @@
    "place": "telegram",
    "by": "purple"
   }
- ]
+ ],
+ "docs": []
 }
