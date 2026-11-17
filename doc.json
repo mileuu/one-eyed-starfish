@@ -17,6 +17,11 @@
  "log": [
   {
    "by": "purple",
+   "at": "2026-11-17T21:09:56.572Z",
+   "what": "document deleted: \"poster test\""
+  },
+  {
+   "by": "purple",
    "at": "2026-11-16T09:20:39.845Z",
    "what": "document renamed: \"poster test\""
   },
@@ -148,16 +153,5 @@
    "by": "purple"
   }
  ],
- "docs": [
-  {
-   "id": "mwj1xw1bvy0wr",
-   "title": "poster test",
-   "path": "files/2026-11-16-mwj1xw1bvy0wr.pdf",
-   "name": "poster_versuchshaus_print (1).pdf",
-   "type": "application/pdf",
-   "size": 22586030,
-   "by": "purple",
-   "at": "2026-11-16T09:19:22.991Z"
-  }
- ]
+ "docs": []
 }
